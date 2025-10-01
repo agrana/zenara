@@ -21,12 +21,18 @@ vercel_team_id   = ""  # Leave empty for personal account, or add team ID
 vercel_project_name = "your-project-name"  # Name of your Vercel project
 github_repo      = "your-username/your-repo"  # Your GitHub repository
 
-# Supabase Configuration (optional - remove if not using Supabase)
-supabase_url                = "https://your-project.supabase.co"
-supabase_anon_key          = "your-supabase-anon-key"
-supabase_service_role_key  = "your-supabase-service-role-key"
+# Supabase Configuration (required for Vercel deployment)
+supabase_url              = "https://your-project.supabase.co"
+supabase_anon_key         = "your-supabase-anon-key"
+supabase_service_role_key = "your-supabase-service-role-key"
+
+# OpenAI Configuration (required for AI features)
+openai_api_key = "sk-your-openai-api-key"
+openai_model   = "gpt-4o-mini"  # Optional, defaults to gpt-4o-mini
+
+# Supabase Terraform Provider (optional - only if managing Supabase with Terraform)
 supabase_access_token = "your-supabase-access-token"  # Get from https://supabase.com/dashboard/account/tokens
-supabase_project_id   = "your-supabase-project-id"  # Your Supabase project ID
+supabase_project_id   = ""                            # Your Supabase project ID (leave empty if not using)
 
 # Google OAuth Configuration (optional - remove if not using Google OAuth)
 google_client_id     = "your-google-client-id"

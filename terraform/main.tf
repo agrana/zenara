@@ -35,10 +35,15 @@ module "email_routing" {
 module "vercel" {
   source = "./modules/vercel"
 
-  project_name = var.vercel_project_name
-  domain_name  = local.domain_name
-  github_repo  = var.github_repo
-  team_id      = var.vercel_team_id
+  project_name              = var.vercel_project_name
+  domain_name               = local.domain_name
+  github_repo               = var.github_repo
+  team_id                   = var.vercel_team_id
+  supabase_url              = var.supabase_url
+  supabase_anon_key         = var.supabase_anon_key
+  supabase_service_role_key = var.supabase_service_role_key
+  openai_api_key            = var.openai_api_key
+  openai_model              = var.openai_model
 }
 
 # Supabase Module (conditional - only if project_id is provided)

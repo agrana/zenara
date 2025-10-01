@@ -19,11 +19,32 @@ variable "team_id" {
   default     = ""
 }
 
-variable "environment_variables" {
-  description = "Environment variables for the Vercel project"
-  type = map(object({
-    value  = string
-    target = list(string)
-  }))
-  default = {}
+variable "supabase_url" {
+  description = "Supabase project URL"
+  type        = string
+  sensitive   = true
+}
+
+variable "supabase_anon_key" {
+  description = "Supabase anonymous key"
+  type        = string
+  sensitive   = true
+}
+
+variable "supabase_service_role_key" {
+  description = "Supabase service role key"
+  type        = string
+  sensitive   = true
+}
+
+variable "openai_api_key" {
+  description = "OpenAI API key"
+  type        = string
+  sensitive   = true
+}
+
+variable "openai_model" {
+  description = "OpenAI model to use"
+  type        = string
+  default     = "gpt-4o-mini"
 }

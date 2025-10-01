@@ -1,0 +1,81 @@
+name: Deploy Infrastructure with Terraform
+
+on:
+  workflow_dispatch:  # Manual trigger
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+
+jobs:
+  terraform:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        env:
+          # Cloudflare
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          
+          # Vercel
+          TF_VAR_vercel_api_token: ${{ secrets.VERCEL_API_TOKEN }}
+          TF_VAR_vercel_team_id: ${{ secrets.VERCEL_TEAM_ID }}
+          
+          # Supabase
+          TF_VAR_supabase_url: ${{ secrets.SUPABASE_URL }}
+          TF_VAR_supabase_anon_key: ${{ secrets.SUPABASE_ANON_KEY }}
+          TF_VAR_supabase_service_role_key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          
+          # OpenAI
+          TF_VAR_openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          
+          # Project Config (these can be in vars or secrets)
+          TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
+          TF_VAR_app_url: ${{ vars.APP_URL }}
+          TF_VAR_support_email: ${{ vars.SUPPORT_EMAIL }}
+          TF_VAR_contact_email: ${{ vars.CONTACT_EMAIL }}
+          TF_VAR_vercel_project_name: ${{ vars.VERCEL_PROJECT_NAME }}
+          TF_VAR_github_repo: ${{ vars.GITHUB_REPO }}
+          TF_VAR_supabase_project_id: ${{ vars.SUPABASE_PROJECT_ID }}
+        run: terraform plan -no-color
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          # Same env vars as plan
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_vercel_api_token: ${{ secrets.VERCEL_API_TOKEN }}
+          TF_VAR_vercel_team_id: ${{ secrets.VERCEL_TEAM_ID }}
+          TF_VAR_supabase_url: ${{ secrets.SUPABASE_URL }}
+          TF_VAR_supabase_anon_key: ${{ secrets.SUPABASE_ANON_KEY }}
+          TF_VAR_supabase_service_role_key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          TF_VAR_openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
+          TF_VAR_app_url: ${{ vars.APP_URL }}
+          TF_VAR_support_email: ${{ vars.SUPPORT_EMAIL }}
+          TF_VAR_contact_email: ${{ vars.CONTACT_EMAIL }}
+          TF_VAR_vercel_project_name: ${{ vars.VERCEL_PROJECT_NAME }}
+          TF_VAR_github_repo: ${{ vars.GITHUB_REPO }}
+          TF_VAR_supabase_project_id: ${{ vars.SUPABASE_PROJECT_ID }}
+        run: terraform apply -auto-approve
+
