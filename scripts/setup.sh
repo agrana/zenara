@@ -96,6 +96,7 @@ print_status "Now let's configure your API tokens..."
 echo
 
 prompt_sensitive "Cloudflare API Token" CLOUDFLARE_TOKEN
+prompt_with_default "Cloudflare Account ID (find in dashboard URL)" "" CLOUDFLARE_ACCOUNT_ID
 prompt_sensitive "Vercel API Token" VERCEL_TOKEN
 
 echo
@@ -138,8 +139,9 @@ app_url     = "$APP_URL"
 support_email = "$SUPPORT_EMAIL"
 contact_email = "$CONTACT_EMAIL"
 
-# Cloudflare API token
+# Cloudflare Configuration
 cloudflare_api_token = "$CLOUDFLARE_TOKEN"
+cloudflare_account_id = "$CLOUDFLARE_ACCOUNT_ID"
 
 # Vercel Configuration
 vercel_api_token = "$VERCEL_TOKEN"
@@ -182,7 +184,10 @@ print_success "terraform.tfvars created!"
 
 # Install Node.js dependencies
 print_status "Installing Node.js dependencies..."
-npm install
+if ! npm install --include=dev; then
+    print_warning "First npm install failed (likely husky issue), retrying..."
+    npm install --include=dev
+fi
 
 print_success "Dependencies installed!"
 
@@ -198,15 +203,24 @@ echo
 print_success "🎉 Setup completed successfully!"
 echo
 print_status "Next steps:"
+echo
+print_warning "IMPORTANT: After running 'terraform apply', you'll get Cloudflare nameservers."
+echo "You MUST update your domain's nameservers at your registrar to:"
+echo "  - The nameservers shown in the Terraform output"
+echo "  - This is required for Cloudflare to manage your domain"
+echo
 echo "1. Review your configuration in terraform/terraform.tfvars"
 echo "2. Set up environment variables: cp env.example .env.local"
 echo "3. Run 'terraform plan' to see what will be created"
 echo "4. Run 'terraform apply' to create your infrastructure"
-echo "5. Run 'npm run dev' to start the development server"
+echo "5. Copy the nameservers from the output and update at your domain registrar"
+echo "6. Wait for DNS propagation (can take up to 24 hours)"
+echo "7. Run 'npm run dev' to start the development server"
 echo
 print_status "Useful commands:"
 echo "  terraform plan     - Preview changes"
 echo "  terraform apply    - Apply changes"
+echo "  terraform output   - Show nameservers and other outputs"
 echo "  terraform destroy  - Destroy infrastructure"
 echo
 print_warning "Remember to never commit terraform.tfvars to version control!"

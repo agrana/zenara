@@ -7,25 +7,31 @@ terraform {
   }
 }
 
-# Data source to reference existing Vercel project
-data "vercel_project" "main" {
-  name    = var.project_name
-  team_id = var.team_id
+# Create Vercel project
+resource "vercel_project" "main" {
+  name      = var.project_name
+  framework = "nextjs"
+  team_id   = var.team_id != "" ? var.team_id : null
+
+  git_repository = {
+    type = "github"
+    repo = var.github_repo
+  }
+
+  # Build settings
+  build_command   = "npm run build"
+  install_command = "npm install"
+  dev_command     = "npm run dev"
 }
 
 # Custom Domain
 resource "vercel_project_domain" "main" {
-  project_id = data.vercel_project.main.id
+  project_id = vercel_project.main.id
   domain     = var.domain_name
-
-  # Import existing domain - ignore changes to match current state
-  lifecycle {
-    ignore_changes = [
-      redirect,
-      redirect_status_code
-    ]
-  }
 }
 
-# Environment Variables are already configured in Vercel
-# No need to manage them with Terraform since they're already set up correctly
+# WWW subdomain (optional)
+resource "vercel_project_domain" "www" {
+  project_id = vercel_project.main.id
+  domain     = "www.${var.domain_name}"
+}

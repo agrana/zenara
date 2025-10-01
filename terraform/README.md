@@ -10,17 +10,24 @@ This directory contains Terraform configurations to manage your project's infras
 
 ## Setup
 
-### 1. Get Cloudflare API Token
+### 1. Get Cloudflare Credentials
 
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)
+**Cloudflare Account ID:**
+1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com)
+2. Look at the URL: `https://dash.cloudflare.com/{YOUR_ACCOUNT_ID}/...`
+3. OR: Go to any domain → Overview → Right sidebar shows "Account ID"
+4. Copy the 32-character hexadecimal ID (e.g., `a1b2c3d4e5f6...`)
+
+**Cloudflare API Token:**
+1. Go to [API Tokens](https://dash.cloudflare.com/profile/api-tokens)
 2. Click "Create Token"
 3. Use "Custom token" template
 4. Set permissions:
-   - `Zone:Zone:Read`
+   - `Account:Account Settings:Read`
+   - `Zone:Zone:Edit`
    - `Zone:DNS:Edit`
-   - `Zone:Page Rules:Edit`
    - `Zone:Email Routing:Edit`
-5. Set zone resources to include your domain
+5. Set zone resources to "All zones"
 6. Copy the generated token
 
 ### 2. Configure Variables

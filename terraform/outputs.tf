@@ -1,8 +1,3 @@
-output "zone_id" {
-  description = "Cloudflare Zone ID for the domain"
-  value       = data.cloudflare_zone.main.id
-}
-
 output "domain_name" {
   description = "The configured domain name"
   value       = local.domain_name

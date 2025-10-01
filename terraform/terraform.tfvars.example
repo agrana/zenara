@@ -12,6 +12,9 @@ contact_email = "your-contact@example.com"  # Where contact emails go
 # Required permissions: Zone:Zone:Read, Zone:DNS:Edit, Zone:Email Routing:Read, Zone:Email Routing:Edit
 cloudflare_api_token = "your-cloudflare-api-token"
 
+# Cloudflare Account ID (find in your Cloudflare dashboard URL or Account Home page)
+cloudflare_account_id = "your-cloudflare-account-id"
+
 # Vercel Configuration
 vercel_api_token = "your-vercel-api-token"  # Get from https://vercel.com/account/tokens
 vercel_team_id   = ""  # Leave empty for personal account, or add team ID

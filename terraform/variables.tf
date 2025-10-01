@@ -24,6 +24,11 @@ variable "cloudflare_api_token" {
   sensitive   = true
 }
 
+variable "cloudflare_account_id" {
+  description = "Cloudflare account ID (find in Cloudflare dashboard URL or Account Home)"
+  type        = string
+}
+
 variable "vercel_api_token" {
   description = "Vercel API token (get from https://vercel.com/account/tokens)"
   type        = string
@@ -47,53 +52,61 @@ variable "github_repo" {
   type        = string
 }
 
-# Supabase Configuration
+# Supabase Configuration (Optional)
 variable "supabase_url" {
   description = "Supabase project URL"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "supabase_anon_key" {
   description = "Supabase anonymous key"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "supabase_service_role_key" {
   description = "Supabase service role key"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
-# Google OAuth Configuration
+# Google OAuth Configuration (Optional)
 variable "google_client_id" {
   description = "Google OAuth client ID"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "google_client_secret" {
   description = "Google OAuth client secret"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
-# NextAuth Configuration
+# NextAuth Configuration (Optional)
 variable "nextauth_secret" {
   description = "NextAuth secret key"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
-# Supabase Configuration
+# Supabase Configuration (Optional)
 variable "supabase_access_token" {
   description = "Supabase access token (get from https://supabase.com/dashboard/account/tokens)"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "supabase_project_id" {
   description = "Supabase project ID"
   type        = string
+  default     = ""
 }
