@@ -14,7 +14,8 @@ output "dns_records" {
 #   value       = module.dns.page_rules
 # }
 
-output "email_forwarding_rules" {
-  description = "Created email forwarding rules"
-  value       = module.email_routing.email_forwarding_rules
-}
+# Temporarily disabled - re-enable after email routing module is enabled
+# output "email_forwarding_rules" {
+#   description = "Created email forwarding rules"
+#   value       = module.email_routing.email_forwarding_rules
+# }

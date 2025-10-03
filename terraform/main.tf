@@ -21,15 +21,16 @@ module "dns" {
   app_url     = var.app_url
 }
 
-# Email Routing Module
-module "email_routing" {
-  source = "./modules/email_routing"
-
-  zone_id       = local.zone_id
-  domain_name   = local.domain_name
-  support_email = var.support_email
-  contact_email = var.contact_email
-}
+# Email Routing Module - Temporarily disabled due to orphaned rules
+# Re-enable after cleaning up Cloudflare email routing
+# module "email_routing" {
+#   source = "./modules/email_routing"
+#
+#   zone_id       = local.zone_id
+#   domain_name   = local.domain_name
+#   support_email = var.support_email
+#   contact_email = var.contact_email
+# }
 
 # Vercel Module
 module "vercel" {
