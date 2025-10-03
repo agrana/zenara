@@ -71,7 +71,7 @@ jobs:
         run: terraform plan -no-color
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/main'
         env:
           # Same env vars as plan
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -93,7 +93,7 @@ jobs:
         run: terraform apply -auto-approve
 
       - name: Upload Terraform State
-        if: always()
+        if: github.ref == 'refs/heads/main'
         uses: badgerhobbs/terraform-state@v2
         with:
           encryption_key: ${{ secrets.TF_STATE_ENCRYPTION_KEY }}
