@@ -41,6 +41,33 @@ jobs:
         working-directory: ./terraform
         run: terraform init
 
+      - name: Import Existing Resources (if they exist)
+        working-directory: ./terraform
+        continue-on-error: true
+        env:
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_vercel_api_token: ${{ secrets.VERCEL_API_TOKEN }}
+          TF_VAR_vercel_team_id: ${{ secrets.VERCEL_TEAM_ID }}
+          TF_VAR_supabase_url: ${{ secrets.SUPABASE_URL }}
+          TF_VAR_supabase_anon_key: ${{ secrets.SUPABASE_ANON_KEY }}
+          TF_VAR_supabase_service_role_key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          TF_VAR_openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
+          TF_VAR_app_url: ${{ vars.APP_URL }}
+          TF_VAR_support_email: ${{ vars.SUPPORT_EMAIL }}
+          TF_VAR_contact_email: ${{ vars.CONTACT_EMAIL }}
+          TF_VAR_vercel_project_name: ${{ vars.VERCEL_PROJECT_NAME }}
+          TF_VAR_github_repo: ${{ vars.GIT_REPOSITORY }}
+          TF_VAR_supabase_project_id: ${{ vars.SUPABASE_PROJECT_ID }}
+        run: |
+          # Import Cloudflare zone if it exists
+          terraform import cloudflare_zone.main ${{ vars.CLOUDFLARE_ZONE_ID }} || true
+          
+          # Import Vercel project if it exists  
+          terraform import module.vercel.vercel_project.main ${{ vars.VERCEL_PROJECT_ID }} || true
+
       - name: Terraform Plan
         env:
           # Cloudflare

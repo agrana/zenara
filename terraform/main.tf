@@ -57,12 +57,12 @@ module "supabase" {
 # Cloudflare Outputs
 output "cloudflare_nameservers" {
   description = "Cloudflare nameservers - configure these at your domain registrar"
-  value       = data.cloudflare_zone.main.name_servers
+  value       = cloudflare_zone.main.name_servers
 }
 
 output "cloudflare_zone_id" {
   description = "Cloudflare Zone ID"
-  value       = data.cloudflare_zone.main.id
+  value       = cloudflare_zone.main.id
 }
 
 # Vercel Outputs
