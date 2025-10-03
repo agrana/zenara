@@ -69,7 +69,7 @@ resource "vercel_project_environment_variable" "supabase_service_role_key" {
   project_id = vercel_project.main.id
   key        = "SUPABASE_SERVICE_ROLE_KEY"
   value      = var.supabase_service_role_key
-  target     = ["production", "preview", "development"]
+  target     = ["production", "preview"]
   sensitive  = true
 }
 
@@ -77,7 +77,7 @@ resource "vercel_project_environment_variable" "openai_api_key" {
   project_id = vercel_project.main.id
   key        = "OPENAI_API_KEY"
   value      = var.openai_api_key
-  target     = ["production", "preview", "development"]
+  target     = ["production", "preview"]
   sensitive  = true
 }
 

@@ -14,7 +14,7 @@ resource "cloudflare_record" "root" {
   content         = var.app_url
   type            = "CNAME"
   proxied         = true
-  allow_overwrite = false
+  allow_overwrite = true
   comment         = "Root domain pointing to app URL"
 }
 
@@ -24,7 +24,7 @@ resource "cloudflare_record" "www" {
   content         = var.app_url
   type            = "CNAME"
   proxied         = true
-  allow_overwrite = false
+  allow_overwrite = true
   comment         = "WWW subdomain pointing to app URL"
 }
 
@@ -34,7 +34,7 @@ resource "cloudflare_record" "api" {
   content         = var.app_url
   type            = "CNAME"
   proxied         = true
-  allow_overwrite = false
+  allow_overwrite = true
   comment         = "API subdomain"
 }
 
