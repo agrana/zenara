@@ -20,15 +20,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Terraform State
-        uses: badgerhobbs/terraform-state@v2
-        with:
-          encryption_key: ${{ secrets.TF_STATE_ENCRYPTION_KEY }}
-          operation: download
-          location: artifact
-          directory: terraform
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
+      # Temporarily disabled to start with fresh state
+      # Re-enable after first successful run
+      # - name: Download Terraform State
+      #   uses: badgerhobbs/terraform-state@v2
+      #   with:
+      #     encryption_key: ${{ secrets.TF_STATE_ENCRYPTION_KEY }}
+      #     operation: download
+      #     location: artifact
+      #     directory: terraform
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #   continue-on-error: true
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
