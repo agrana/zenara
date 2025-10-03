@@ -5,8 +5,10 @@ This guide shows how to manage environment variables securely using GitHub Secre
 ## Architecture
 
 ```
-GitHub Secrets → GitHub Actions → Terraform → Vercel Environment Variables
+GitHub Secrets → GitHub Actions → Terraform (state as encrypted artifact) → Vercel Environment Variables
 ```
+
+**No external services required!** State is stored as an encrypted GitHub artifact using the [terraform-state action](https://github.com/marketplace/actions/terraform-state).
 
 ## Step 1: Add GitHub Secrets
 
@@ -15,6 +17,16 @@ Go to your GitHub repository:
 2. Click **New repository secret** for each:
 
 ### Required Secrets
+
+#### Terraform State Encryption
+```
+TF_STATE_ENCRYPTION_KEY = your-random-256-bit-key
+```
+Generate a secure key:
+```bash
+openssl rand -hex 32
+```
+This encrypts your Terraform state file in GitHub artifacts (AES-256).
 
 #### Cloudflare
 ```
@@ -110,11 +122,13 @@ After Terraform runs:
 
 ## Benefits
 
-✅ **Security**: Secrets never stored in code  
+✅ **Security**: Secrets never stored in code, state file encrypted with AES-256  
 ✅ **Automation**: Environment variables auto-sync to Vercel  
 ✅ **Version Control**: Infrastructure changes tracked in git  
 ✅ **Audit Trail**: GitHub Actions logs all deployments  
-✅ **No Manual Steps**: Update secrets once, everything updates automatically
+✅ **No Manual Steps**: Update secrets once, everything updates automatically  
+✅ **No External Services**: Everything stays in GitHub, no credit cards required  
+✅ **Free Forever**: Uses GitHub's built-in artifact storage
 
 ## Workflow File
 
@@ -137,12 +151,14 @@ The automation is defined in:
 - Check GitHub Actions logs for errors
 - Manually trigger a Vercel redeploy after Terraform runs
 
-## Alternative: Use Terraform Cloud
+### State file issues
+- State is stored as GitHub artifact (lasts 90 days by default)
+- If artifact expires, Terraform will recreate from scratch
+- Can adjust artifact retention in repo Settings → Actions → General
+- State is encrypted with your `TF_STATE_ENCRYPTION_KEY`
 
-For better state management and collaboration:
-
-1. Create account at https://app.terraform.io
-2. Create workspace linked to GitHub repo
-3. Add variables in Terraform Cloud UI
-4. Remove GitHub Actions workflow (Terraform Cloud auto-runs)
+### First run fails with "state not found"
+- This is normal - first run creates the state
+- The `continue-on-error: true` on download step handles this
+- Subsequent runs will download existing state
 

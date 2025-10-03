@@ -20,12 +20,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Download Terraform State
+        uses: badgerhobbs/terraform-state@v2
+        with:
+          encryption_key: ${{ secrets.TF_STATE_ENCRYPTION_KEY }}
+          operation: download
+          location: artifact
+          directory: terraform
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.6.0
 
       - name: Terraform Init
+        working-directory: ./terraform
         run: terraform init
 
       - name: Terraform Plan
@@ -78,4 +89,14 @@ jobs:
           TF_VAR_github_repo: ${{ vars.GITHUB_REPO }}
           TF_VAR_supabase_project_id: ${{ vars.SUPABASE_PROJECT_ID }}
         run: terraform apply -auto-approve
+
+      - name: Upload Terraform State
+        if: always()
+        uses: badgerhobbs/terraform-state@v2
+        with:
+          encryption_key: ${{ secrets.TF_STATE_ENCRYPTION_KEY }}
+          operation: upload
+          location: artifact
+          directory: terraform
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
