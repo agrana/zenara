@@ -13,12 +13,14 @@ This directory contains Terraform configurations to manage your project's infras
 ### 1. Get Cloudflare Credentials
 
 **Cloudflare Account ID:**
+
 1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com)
 2. Look at the URL: `https://dash.cloudflare.com/{YOUR_ACCOUNT_ID}/...`
 3. OR: Go to any domain → Overview → Right sidebar shows "Account ID"
 4. Copy the 32-character hexadecimal ID (e.g., `a1b2c3d4e5f6...`)
 
 **Cloudflare API Token:**
+
 1. Go to [API Tokens](https://dash.cloudflare.com/profile/api-tokens)
 2. Click "Create Token"
 3. Use "Custom token" template
@@ -128,3 +130,5 @@ export CLOUDFLARE_API_TOKEN="your-api-token"
 - Use environment variables for sensitive data in CI/CD
 - Regularly rotate API tokens
 - Use least-privilege access for API tokens
+
+# Managed by GitHub Actions - see .github/workflows/terraform-deploy.yml
