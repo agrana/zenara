@@ -1,13 +1,15 @@
 # Local variables for common values
 locals {
   domain_name = var.domain_name
-  zone_id     = data.cloudflare_zone.main.id
+  zone_id     = cloudflare_zone.main.id
 }
 
-# Use existing Cloudflare zone (already created)
-# Note: Zone must be manually added to Cloudflare first
-data "cloudflare_zone" "main" {
-  name = local.domain_name
+# Create Cloudflare zone
+resource "cloudflare_zone" "main" {
+  account_id = var.cloudflare_account_id
+  zone       = local.domain_name
+  plan       = "free"
+  type       = "full"
 }
 
 # DNS Module
@@ -55,12 +57,12 @@ module "supabase" {
 # Cloudflare Outputs
 output "cloudflare_nameservers" {
   description = "Cloudflare nameservers - configure these at your domain registrar"
-  value       = data.cloudflare_zone.main.name_servers
+  value       = cloudflare_zone.main.name_servers
 }
 
 output "cloudflare_zone_id" {
   description = "Cloudflare Zone ID"
-  value       = data.cloudflare_zone.main.id
+  value       = cloudflare_zone.main.id
 }
 
 # Vercel Outputs
