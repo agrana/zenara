@@ -64,7 +64,7 @@ jobs:
           TF_VAR_support_email: ${{ vars.SUPPORT_EMAIL }}
           TF_VAR_contact_email: ${{ vars.CONTACT_EMAIL }}
           TF_VAR_vercel_project_name: ${{ vars.VERCEL_PROJECT_NAME }}
-          TF_VAR_github_repo: ${{ vars.GITHUB_REPO }}
+          TF_VAR_github_repo: ${{ vars.GIT_REPOSITORY }}
           TF_VAR_supabase_project_id: ${{ vars.SUPABASE_PROJECT_ID }}
         run: terraform plan -no-color
 
@@ -86,7 +86,7 @@ jobs:
           TF_VAR_support_email: ${{ vars.SUPPORT_EMAIL }}
           TF_VAR_contact_email: ${{ vars.CONTACT_EMAIL }}
           TF_VAR_vercel_project_name: ${{ vars.VERCEL_PROJECT_NAME }}
-          TF_VAR_github_repo: ${{ vars.GITHUB_REPO }}
+          TF_VAR_github_repo: ${{ vars.GIT_REPOSITORY }}
           TF_VAR_supabase_project_id: ${{ vars.SUPABASE_PROJECT_ID }}
         run: terraform apply -auto-approve
 

@@ -19,7 +19,7 @@ cloudflare_account_id = "your-cloudflare-account-id"
 vercel_api_token = "your-vercel-api-token"  # Get from https://vercel.com/account/tokens
 vercel_team_id   = ""  # Leave empty for personal account, or add team ID
 vercel_project_name = "your-project-name"  # Name of your Vercel project
-github_repo      = "your-username/your-repo"  # Your GitHub repository
+github_repo      = "your-username/your-repo"  # Your GitHub repository (e.g., agrana/zenara)
 
 # Supabase Configuration (required for Vercel deployment)
 supabase_url              = "https://your-project.supabase.co"

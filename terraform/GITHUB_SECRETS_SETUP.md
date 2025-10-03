@@ -66,9 +66,12 @@ APP_URL = zenara.vercel.app
 SUPPORT_EMAIL = support@zenara.be
 CONTACT_EMAIL = info@zenara.be
 VERCEL_PROJECT_NAME = zenara
-GITHUB_REPO = agrana/zenara
+GIT_REPOSITORY = agrana/zenara
+VERCEL_TEAM_ID = (leave empty for personal)
 SUPABASE_PROJECT_ID = (optional, leave empty if not using)
 ```
+
+**Note:** Use `GIT_REPOSITORY` instead of `GITHUB_REPO` - GitHub reserves variables starting with `GITHUB_`.
 
 ## Step 3: How It Works
 
