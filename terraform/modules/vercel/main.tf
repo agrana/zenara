@@ -10,7 +10,7 @@ terraform {
 # Create Vercel project
 resource "vercel_project" "main" {
   name      = var.project_name
-  framework = "nextjs"
+  framework = null  # Not using a framework, custom Vite + Express setup
   team_id   = var.team_id != "" ? var.team_id : null
 
   git_repository = {
@@ -21,7 +21,7 @@ resource "vercel_project" "main" {
   # Build settings
   build_command   = "npm run build"
   install_command = "npm install"
-  dev_command     = "npm run dev"
+  output_directory = "dist/public"
 }
 
 # Custom Domain
