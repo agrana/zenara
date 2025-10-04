@@ -57,7 +57,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
   fetchPrompts: async (userId?: string) => {
     set({ isLoading: true, error: null });
     try {
-      const url = '/.netlify/functions/prompts';
+      const url = '/api/prompts';
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -93,7 +93,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
   fetchPromptsByType: async (templateType: string, userId?: string) => {
     set({ isLoading: true, error: null });
     try {
-      const url = '/.netlify/functions/prompts';
+      const url = '/api/prompts';
 
       const response = await fetch(url);
 
@@ -115,7 +115,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
   fetchTemplateTypes: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch('/.netlify/functions/prompts-templates');
+      const response = await fetch('/api/prompts/templates/types');
 
       if (!response.ok) {
         // If the endpoint doesn't exist yet, use hardcoded template types
@@ -180,7 +180,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
   createPrompt: async (data: CreatePromptData) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch('/.netlify/functions/prompts', {
+      const response = await fetch('/api/prompts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -275,7 +275,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
 
   getPromptById: async (id: string) => {
     try {
-      const response = await fetch(`/.netlify/functions/prompts`);
+      const response = await fetch(`/api/prompts`);
 
       if (!response.ok) {
         if (response.status === 404) {
