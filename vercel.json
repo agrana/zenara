@@ -1,8 +1,8 @@
 {
   "buildCommand": "npm install --include=dev && npm run build",
-  "installCommand": "npm install --include=dev",
   "outputDirectory": "dist/public",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

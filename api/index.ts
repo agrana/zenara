@@ -494,5 +494,12 @@ app.get('/api/prompts/templates/types', async (req, res) => {
   }
 });
 
-// Export for Vercel
-export default app;
+// Export handler for Vercel serverless
+// Vercel will call this function for each request
+export default async (req: any, res: any) => {
+  return new Promise((resolve, reject) => {
+    app(req, res);
+    res.on('finish', resolve);
+    res.on('error', reject);
+  });
+};
