@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import * as schema from "@shared/schema";
+import * as schema from "../../shared/schema";
 import 'dotenv/config';
 
 let supabaseClient;

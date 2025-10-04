@@ -4,7 +4,7 @@ import {
   type PomodoroSession, type InsertPomodoroSession,
   type Scratchpad, type InsertScratchpad,
   type Settings, type InsertSettings
-} from "@shared/schema";
+} from "../../shared/schema";
 import { supabase } from "./db";
 
 export interface IStorage {
