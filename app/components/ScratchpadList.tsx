@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect } from 'react';
 import { useScratchpadStore } from '../store/scratchpadStore';
 import { Button } from '../ui/button';

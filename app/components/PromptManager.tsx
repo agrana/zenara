@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect } from 'react';
 import { usePromptStore, type Prompt, type CreatePromptData } from '../store/promptStore';
 import { Button } from '../ui/button';

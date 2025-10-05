@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect } from "react";
 import { useTaskStore, type Task } from "../store/taskStore";
 import { usePomodoroStore } from "../store/pomodoroStore";
