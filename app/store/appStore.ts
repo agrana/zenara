@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { getBackgroundByRotationType, type Background, type BackgroundRotationType } from '@/lib/backgrounds';
-import { getQuoteOfTheDay, getRandomQuote, type Quote } from '@/lib/quotes';
+import { getBackgroundByRotationType, type Background, type BackgroundRotationType } from '../lib/backgrounds';
+import { getQuoteOfTheDay, getRandomQuote, type Quote } from '../lib/quotes';
 
 interface AppState {
   // Background settings

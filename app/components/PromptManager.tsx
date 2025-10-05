@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { usePromptStore, type Prompt, type CreatePromptData } from '@/store/promptStore';
+import { usePromptStore, type Prompt, type CreatePromptData } from '../store/promptStore';
 import { Button } from '../ui/button';
 import { Card, CardHeader, CardContent, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';

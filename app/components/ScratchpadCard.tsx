@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useScratchpadStore, type FormatType } from "@/store/scratchpadStore";
-import { usePromptStore } from "@/store/promptStore";
-import { useAppStore } from "@/store/appStore";
+import { useScratchpadStore, type FormatType } from "../store/scratchpadStore";
+import { usePromptStore } from "../store/promptStore";
+import { useAppStore } from "../store/appStore";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardContent } from "../ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { ChevronDown, ChevronUp, Wand2 } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import MDEditor, { commands, title1 } from '@uiw/react-md-editor';
-import '@uiw/react-md-editor/markdown-editor.css?v=2';
-import '@uiw/react-markdown-preview/markdown.css?v=2';
+import '@uiw/react-md-editor/markdown-editor.css';
+import '@uiw/react-markdown-preview/markdown.css';
 import styles from './ScratchpadCard.module.css';
 import ScratchpadList from './ScratchpadList';
 import { VersionHistory } from './VersionHistory';

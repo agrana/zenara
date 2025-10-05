@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '../lib/supabaseClient';
 
 export type FormatType = 'default' | 'diary' | 'meeting' | 'braindump' | 'brainstorm';
 

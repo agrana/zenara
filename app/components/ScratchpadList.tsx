@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useScratchpadStore } from '@/store/scratchpadStore';
+import { useScratchpadStore } from '../store/scratchpadStore';
 import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
 

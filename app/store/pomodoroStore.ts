@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabaseClient';
-import { audioManager, type SoundType, type AlertSound } from '@/lib/audioManager';
+import { supabase } from '../lib/supabaseClient';
+import { audioManager, type SoundType, type AlertSound } from '../lib/audioManager';
 
 interface PomodoroSession {
   id: number;

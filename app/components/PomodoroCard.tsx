@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { usePomodoroStore } from "@/store/pomodoroStore";
-import { useTaskStore, type Task } from "@/store/taskStore";
-import { formatDuration } from "@/lib/formatDate";
-import { audioManager, type SoundType, type AlertSound } from "@/lib/audioManager";
+import { usePomodoroStore } from "../store/pomodoroStore";
+import { useTaskStore, type Task } from "../store/taskStore";
+import { formatDuration } from "../lib/formatDate";
+import { audioManager, type SoundType, type AlertSound } from "../lib/audioManager";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardContent } from "../ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";

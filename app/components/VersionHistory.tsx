@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useScratchpadStore, type NoteVersion } from '@/store/scratchpadStore';
+import { useScratchpadStore, type NoteVersion } from '../store/scratchpadStore';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';

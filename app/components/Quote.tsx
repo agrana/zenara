@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAppStore } from "@/store/appStore";
+import { useAppStore } from "../store/appStore";
 import { RefreshCw } from "lucide-react";
 import { Button } from "../ui/button";
 

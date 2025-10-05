@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useTaskStore, type Task } from "@/store/taskStore";
-import { usePomodoroStore } from "@/store/pomodoroStore";
-import { formatDateRelative, formatTimeSpent } from "@/lib/formatDate";
+import { useTaskStore, type Task } from "../store/taskStore";
+import { usePomodoroStore } from "../store/pomodoroStore";
+import { formatDateRelative, formatTimeSpent } from "../lib/formatDate";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardContent } from "../ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
