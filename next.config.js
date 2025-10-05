@@ -4,9 +4,8 @@ const nextConfig = {
     domains: ['localhost'],
   },
   env: {
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

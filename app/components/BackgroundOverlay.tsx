@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAppStore } from "@/store/appStore";
+import { useAppStore } from "../store/appStore";
 
 export default function BackgroundOverlay() {
   const { background, refreshBackground } = useAppStore();

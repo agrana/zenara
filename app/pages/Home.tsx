@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { useAppStore } from "@/store/appStore";
-import Header from "@/components/Header";
-import Quote from "@/components/Quote";
-import BackgroundOverlay from "@/components/BackgroundOverlay";
-import PomodoroCard from "@/components/PomodoroCard";
-import TaskListCard from "@/components/TaskListCard";
-import ScratchpadCard from "@/components/ScratchpadCard";
-import AppButton from "@/components/AppButton";
+import { useAppStore } from "../store/appStore";
+import Header from "../components/Header";
+import Quote from "../components/Quote";
+import BackgroundOverlay from "../components/BackgroundOverlay";
+import PomodoroCard from "../components/PomodoroCard";
+import TaskListCard from "../components/TaskListCard";
+import ScratchpadCard from "../components/ScratchpadCard";
+import AppButton from "../components/AppButton";
 
 export default function Home() {
   const { darkMode } = useAppStore();
