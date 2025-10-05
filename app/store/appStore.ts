@@ -32,7 +32,7 @@ export const useAppStore = create<AppState>()(
       background: getBackgroundByRotationType('daily'),
       backgroundRotation: 'daily',
       selectedCategory: undefined,
-      darkMode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
+      darkMode: typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
 
       // Default quote of the day
       quote: getQuoteOfTheDay(),
