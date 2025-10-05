@@ -30,7 +30,8 @@ export interface UpdatePromptData {
 export const PREDEFINED_PROMPTS = {
   diary: {
     name: 'Diary Enhancement',
-    description: 'Improves grammar, flow, and adds descriptive language while maintaining personal tone',
+    description:
+      'Improves grammar, flow, and adds descriptive language while maintaining personal tone',
     template: `You are a helpful writing assistant. Please enhance this diary entry by:
 
 1. Improving grammar and flow
@@ -42,11 +43,12 @@ export const PREDEFINED_PROMPTS = {
 Original diary entry:
 {content}
 
-Enhanced version:`
+Enhanced version:`,
   },
   meeting: {
     name: 'Meeting Notes Organization',
-    description: 'Structures meeting notes with clear headings, action items, and key decisions',
+    description:
+      'Structures meeting notes with clear headings, action items, and key decisions',
     template: `You are a professional meeting assistant. Please organize and enhance these meeting notes by:
 
 1. Structuring the content with clear headings
@@ -58,11 +60,12 @@ Enhanced version:`
 Original meeting notes:
 {content}
 
-Organized version:`
+Organized version:`,
   },
   braindump: {
     name: 'Brain Dump Organization',
-    description: 'Categorizes thoughts into logical groups and creates clear structure',
+    description:
+      'Categorizes thoughts into logical groups and creates clear structure',
     template: `You are a productivity assistant. Please organize this brain dump by:
 
 1. Categorizing thoughts into logical groups
@@ -74,11 +77,12 @@ Organized version:`
 Original brain dump:
 {content}
 
-Organized version:`
+Organized version:`,
   },
   brainstorm: {
     name: 'Brainstorm Enhancement',
-    description: 'Expands on ideas, adds variations, and suggests implementation steps',
+    description:
+      'Expands on ideas, adds variations, and suggests implementation steps',
     template: `You are a creative thinking assistant. Please enhance this brainstorming session by:
 
 1. Expanding on promising ideas
@@ -90,7 +94,7 @@ Organized version:`
 Original brainstorm:
 {content}
 
-Enhanced version:`
+Enhanced version:`,
   },
   summary: {
     name: 'Content Summarization',
@@ -106,11 +110,12 @@ Enhanced version:`
 Original content:
 {content}
 
-Summary:`
+Summary:`,
   },
   expand: {
     name: 'Content Expansion',
-    description: 'Expands brief content with more detail, examples, and context',
+    description:
+      'Expands brief content with more detail, examples, and context',
     template: `You are a content expansion specialist. Please expand this content by:
 
 1. Adding relevant details and context
@@ -122,11 +127,12 @@ Summary:`
 Original content:
 {content}
 
-Expanded version:`
+Expanded version:`,
   },
   translate: {
     name: 'Language Translation',
-    description: 'Translates content to different languages while preserving meaning',
+    description:
+      'Translates content to different languages while preserving meaning',
     template: `You are a professional translator. Please translate this content to {targetLanguage} by:
 
 1. Maintaining the original meaning and tone
@@ -138,7 +144,7 @@ Expanded version:`
 Original content:
 {content}
 
-Translated version:`
+Translated version:`,
   },
   default: {
     name: 'General Note Enhancement',
@@ -154,8 +160,8 @@ Translated version:`
 Original note:
 {content}
 
-Enhanced version:`
-  }
+Enhanced version:`,
+  },
 };
 
 export class PromptService {
@@ -173,18 +179,47 @@ export class PromptService {
    */
   async getUserPrompts(userId?: string): Promise<Prompt[]> {
     try {
-      // Get user's custom prompts
-      const { data: userPrompts, error: userError } = await supabase
-        .from('prompts')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+      let userPrompts: any[] = [];
 
-      if (userError) throw userError;
+      // Get user's custom prompts only if userId is provided
+      if (userId) {
+        const { data, error: userError } = await supabase
+          .from('prompts')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
+
+        if (userError) {
+          console.error('Error fetching user prompts:', userError);
+          // Don't throw, just log and continue with defaults
+        } else {
+          userPrompts = data || [];
+        }
+      }
 
       // Convert predefined prompts to Prompt format
-      const defaultPrompts: Prompt[] = Object.entries(PREDEFINED_PROMPTS).map(([key, prompt]) => ({
+      const defaultPrompts: Prompt[] = Object.entries(PREDEFINED_PROMPTS).map(
+        ([key, prompt]) => ({
+          id: `default_${key}`,
+          name: prompt.name,
+          templateType: key,
+          promptText: prompt.template,
+          isDefault: true,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        })
+      );
+
+      // Combine user prompts with defaults
+      const allPrompts = [...userPrompts, ...defaultPrompts];
+
+      return allPrompts;
+    } catch (error) {
+      console.error('Error getting user prompts:', error);
+      // Return at least the default prompts
+      return Object.entries(PREDEFINED_PROMPTS).map(([key, prompt]) => ({
         id: `default_${key}`,
         name: prompt.name,
         templateType: key,
@@ -192,23 +227,18 @@ export class PromptService {
         isDefault: true,
         isActive: true,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       }));
-
-      // Combine user prompts with defaults
-      const allPrompts = [...(userPrompts || []), ...defaultPrompts];
-
-      return allPrompts;
-    } catch (error) {
-      console.error('Error getting user prompts:', error);
-      throw new Error('Failed to get prompts');
     }
   }
 
   /**
    * Get prompts by template type
    */
-  async getPromptsByType(templateType: string, userId?: string): Promise<Prompt[]> {
+  async getPromptsByType(
+    templateType: string,
+    userId?: string
+  ): Promise<Prompt[]> {
     const allPrompts = await this.getUserPrompts(userId);
     return allPrompts.filter(prompt => prompt.templateType === templateType);
   }
@@ -220,14 +250,16 @@ export class PromptService {
     try {
       const { data: prompt, error } = await supabase
         .from('prompts')
-        .insert([{
-          user_id: data.userId,
-          name: data.name,
-          template_type: data.templateType,
-          prompt_text: data.promptText,
-          is_default: data.isDefault || false,
-          is_active: true
-        }])
+        .insert([
+          {
+            user_id: data.userId,
+            name: data.name,
+            template_type: data.templateType,
+            prompt_text: data.promptText,
+            is_default: data.isDefault || false,
+            is_active: true,
+          },
+        ])
         .select()
         .single();
 
@@ -250,7 +282,7 @@ export class PromptService {
           name: data.name,
           prompt_text: data.promptText,
           is_active: data.isActive,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', id)
         .select()
@@ -269,10 +301,7 @@ export class PromptService {
    */
   async deletePrompt(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('prompts')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('prompts').delete().eq('id', id);
 
       if (error) throw error;
       return true;
@@ -290,7 +319,8 @@ export class PromptService {
       // Check if it's a default prompt
       if (id.startsWith('default_')) {
         const templateType = id.replace('default_', '');
-        const predefined = PREDEFINED_PROMPTS[templateType as keyof typeof PREDEFINED_PROMPTS];
+        const predefined =
+          PREDEFINED_PROMPTS[templateType as keyof typeof PREDEFINED_PROMPTS];
         if (predefined) {
           return {
             id,
@@ -300,7 +330,7 @@ export class PromptService {
             isDefault: true,
             isActive: true,
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
           };
         }
       }
@@ -324,12 +354,15 @@ export class PromptService {
    * Get available template types with descriptions
    */
   getTemplateTypes(): Record<string, { name: string; description: string }> {
-    return Object.entries(PREDEFINED_PROMPTS).reduce((acc, [key, prompt]) => {
-      acc[key] = {
-        name: prompt.name,
-        description: prompt.description
-      };
-      return acc;
-    }, {} as Record<string, { name: string; description: string }>);
+    return Object.entries(PREDEFINED_PROMPTS).reduce(
+      (acc, [key, prompt]) => {
+        acc[key] = {
+          name: prompt.name,
+          description: prompt.description,
+        };
+        return acc;
+      },
+      {} as Record<string, { name: string; description: string }>
+    );
   }
 }

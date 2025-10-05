@@ -1,7 +1,12 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabaseClient';
 
-export type FormatType = 'default' | 'diary' | 'meeting' | 'braindump' | 'brainstorm';
+export type FormatType =
+  | 'default'
+  | 'diary'
+  | 'meeting'
+  | 'braindump'
+  | 'brainstorm';
 
 export interface Note {
   id: string;
@@ -67,15 +72,30 @@ export interface ScratchpadState {
   // Autosave actions
   autoSaveNote: (title: string, content: string) => Promise<void>;
   immediateSave: (title: string, content: string) => Promise<void>;
-  switchToNote: (note: Note | null, currentTitle: string, currentContent: string) => Promise<void>;
+  switchToNote: (
+    note: Note | null,
+    currentTitle: string,
+    currentContent: string
+  ) => Promise<void>;
   setAutoSaveError: (error: string | null) => void;
 
   // Processing actions
-  processContentStream: (content: string, promptType?: string, customPrompt?: string, promptId?: string) => Promise<void>;
+  processContentStream: (
+    content: string,
+    promptType?: string,
+    customPrompt?: string,
+    promptId?: string
+  ) => Promise<void>;
   setProcessingError: (error: string | null) => void;
 
   // Versioning actions
-  createVersion: (noteId: string, title: string, content: string, isProcessed?: boolean, processingMetadata?: any) => Promise<void>;
+  createVersion: (
+    noteId: string,
+    title: string,
+    content: string,
+    isProcessed?: boolean,
+    processingMetadata?: any
+  ) => Promise<void>;
   fetchVersions: (noteId: string) => Promise<void>;
   restoreVersion: (version: NoteVersion) => Promise<void>;
   deleteVersion: (versionId: string) => Promise<void>;
@@ -138,7 +158,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
       set({
         notes: [data, ...get().notes],
         currentNote: data,
-        isLoading: false
+        isLoading: false,
       });
     } catch (error) {
       set({ error: 'Failed to create note', isLoading: false });
@@ -158,9 +178,9 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
 
       if (error) throw error;
       set({
-        notes: get().notes.map(note => note.id === id ? data : note),
+        notes: get().notes.map(note => (note.id === id ? data : note)),
         currentNote: data,
-        isLoading: false
+        isLoading: false,
       });
 
       // Create a version after successful save
@@ -171,13 +191,13 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
     }
   },
 
-  setCurrentNote: (note) => set({ currentNote: note }),
+  setCurrentNote: note => set({ currentNote: note }),
 
-  setFormat: (format) => set({ format }),
+  setFormat: format => set({ format }),
 
-  setProcessedContent: (content) => set({ processedContent: content }),
+  setProcessedContent: content => set({ processedContent: content }),
 
-  setIsProcessing: (isProcessing) => set({ isProcessing }),
+  setIsProcessing: isProcessing => set({ isProcessing }),
 
   processContent: async () => {
     const { currentNote } = get();
@@ -194,7 +214,10 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ content: currentNote.content, format: get().format }),
+        body: JSON.stringify({
+          content: currentNote.content,
+          format: get().format,
+        }),
       });
 
       if (!response.ok) {
@@ -217,7 +240,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
       set({
         notes: get().notes.filter(note => note.id !== id),
         currentNote: null,
-        isLoading: false
+        isLoading: false,
       });
     } catch (error) {
       set({ error: 'Failed to delete note', isLoading: false });
@@ -225,23 +248,23 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
     }
   },
 
-  getFormatTemplate: (format) => {
+  getFormatTemplate: format => {
     switch (format) {
       case 'diary':
-        return "# Dear Diary\n\nToday I...\n\n## Highlights\n\n- \n\n## Mood\n\n- \n\n## Tomorrow I will\n\n- ";
+        return '# Dear Diary\n\nToday I...\n\n## Highlights\n\n- \n\n## Mood\n\n- \n\n## Tomorrow I will\n\n- ';
 
       case 'meeting':
-        return "# Meeting Notes\n\n**Date:** \n**Attendees:** \n\n## Agenda\n\n1. \n\n## Decisions\n\n- \n\n## Action Items\n\n- [ ] \n\n## Notes\n\n";
+        return '# Meeting Notes\n\n**Date:** \n**Attendees:** \n\n## Agenda\n\n1. \n\n## Decisions\n\n- \n\n## Action Items\n\n- [ ] \n\n## Notes\n\n';
 
       case 'braindump':
-        return "# Brain Dump\n\n## Thoughts\n\n- \n\n## Questions\n\n- \n\n## Ideas\n\n- ";
+        return '# Brain Dump\n\n## Thoughts\n\n- \n\n## Questions\n\n- \n\n## Ideas\n\n- ';
 
       case 'brainstorm':
-        return "# Brainstorming Session\n\n## Topic\n\n\n## Ideas\n\n- \n\n## Pros and Cons\n\n| Idea | Pros | Cons |\n| ---- | ---- | ---- |\n|      |      |      |\n\n## Action Items\n\n- [ ] ";
+        return '# Brainstorming Session\n\n## Topic\n\n\n## Ideas\n\n- \n\n## Pros and Cons\n\n| Idea | Pros | Cons |\n| ---- | ---- | ---- |\n|      |      |      |\n\n## Action Items\n\n- [ ] ';
 
       case 'default':
       default:
-        return "";
+        return '';
     }
   },
 
@@ -267,10 +290,12 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
         if (error) throw error;
 
         set({
-          notes: get().notes.map(note => note.id === currentNote.id ? data : note),
+          notes: get().notes.map(note =>
+            note.id === currentNote.id ? data : note
+          ),
           currentNote: data,
           isAutoSaving: false,
-          lastAutoSaved: new Date()
+          lastAutoSaved: new Date(),
         });
       } else {
         // Create new note - only if we have meaningful content
@@ -287,7 +312,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
             notes: [data, ...get().notes],
             currentNote: data,
             isAutoSaving: false,
-            lastAutoSaved: new Date()
+            lastAutoSaved: new Date(),
           });
         } else {
           set({ isAutoSaving: false });
@@ -297,7 +322,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
       console.error('Error autosaving note:', error);
       set({
         isAutoSaving: false,
-        autoSaveError: 'Failed to autosave note'
+        autoSaveError: 'Failed to autosave note',
       });
     }
   },
@@ -321,9 +346,11 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
         if (error) throw error;
 
         set({
-          notes: get().notes.map(note => note.id === currentNote.id ? data : note),
+          notes: get().notes.map(note =>
+            note.id === currentNote.id ? data : note
+          ),
           currentNote: data,
-          lastAutoSaved: new Date()
+          lastAutoSaved: new Date(),
         });
       } else if (content.trim().length > 0) {
         // Create new note immediately
@@ -338,7 +365,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
         set({
           notes: [data, ...get().notes],
           currentNote: data,
-          lastAutoSaved: new Date()
+          lastAutoSaved: new Date(),
         });
       }
     } catch (error) {
@@ -347,7 +374,11 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
     }
   },
 
-  switchToNote: async (note: Note | null, currentTitle: string, currentContent: string) => {
+  switchToNote: async (
+    note: Note | null,
+    currentTitle: string,
+    currentContent: string
+  ) => {
     // Save current note before switching
     if (currentContent.trim()) {
       await get().immediateSave(currentTitle, currentContent);
@@ -356,17 +387,22 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
     set({ currentNote: note });
   },
 
-  setAutoSaveError: (error) => set({ autoSaveError: error }),
+  setAutoSaveError: error => set({ autoSaveError: error }),
 
   // Processing functions
-  processContentStream: async (content: string, promptType = 'default', customPrompt?: string, promptId?: string) => {
+  processContentStream: async (
+    content: string,
+    promptType = 'default',
+    customPrompt?: string,
+    promptId?: string
+  ) => {
     if (!content.trim()) return;
 
     set({
       isProcessingStream: true,
       processingProgress: '',
       processingError: null,
-      processedContent: null
+      processedContent: null,
     });
 
     try {
@@ -379,7 +415,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
           content,
           promptType,
           customPrompt,
-          promptId
+          promptId,
         }),
       });
 
@@ -387,32 +423,72 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
         throw new Error('Failed to start processing');
       }
 
-      // Handle non-streaming response from Netlify function
-      const result = await response.json();
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedContent = '';
 
-      if (result.success) {
-        set({
-          isProcessingStream: false,
-          processingProgress: 'Processing complete!',
-          processedContent: result.processedContent
-        });
-      } else {
-        throw new Error(result.error || 'Processing failed');
+      if (!reader) {
+        throw new Error('No reader available');
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6)); // Remove 'data: ' prefix
+
+              if (data.type === 'start') {
+                set({ processingProgress: `Using: ${data.promptUsed}` });
+              } else if (data.type === 'chunk') {
+                accumulatedContent += data.content;
+                set({ processingProgress: accumulatedContent });
+              } else if (data.type === 'complete') {
+                set({
+                  isProcessingStream: false,
+                  processingProgress: 'Processing complete!',
+                  processedContent: accumulatedContent,
+                });
+              } else if (data.type === 'error') {
+                throw new Error(data.error || 'Processing failed');
+              }
+            } catch (parseError) {
+              // Skip invalid JSON lines
+              console.warn('Failed to parse SSE line:', line);
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Error in streaming processing:', error);
       set({
         isProcessingStream: false,
-        processingError: error instanceof Error ? error.message : 'Processing failed'
+        processingError:
+          error instanceof Error ? error.message : 'Processing failed',
       });
     }
   },
 
-  setProcessingError: (error) => set({ processingError: error }),
+  setProcessingError: error => set({ processingError: error }),
 
   // Versioning functions
-  createVersion: async (noteId: string, title: string, content: string, isProcessed = false, processingMetadata?: any) => {
-    const { data: { user } } = await supabase.auth.getUser();
+  createVersion: async (
+    noteId: string,
+    title: string,
+    content: string,
+    isProcessed = false,
+    processingMetadata?: any
+  ) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       console.error('No user found for creating version');
       return;
@@ -431,7 +507,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
           content,
           format,
           isProcessed,
-          processingMetadata
+          processingMetadata,
         }),
       });
 
@@ -446,17 +522,24 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
       }
     } catch (error) {
       console.error('Error creating version:', error);
-      set({ versionError: error instanceof Error ? error.message : 'Failed to create version' });
+      set({
+        versionError:
+          error instanceof Error ? error.message : 'Failed to create version',
+      });
     }
   },
 
   fetchVersions: async (noteId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     set({ isLoadingVersions: true, versionError: null });
     try {
-      const response = await fetch(`/api/note-versions/${noteId}?userId=${user.id}`);
+      const response = await fetch(
+        `/api/note-versions/${noteId}?userId=${user.id}`
+      );
 
       if (!response.ok) {
         throw new Error('Failed to fetch versions');
@@ -467,8 +550,9 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
     } catch (error) {
       console.error('Error fetching versions:', error);
       set({
-        versionError: error instanceof Error ? error.message : 'Failed to fetch versions',
-        isLoadingVersions: false
+        versionError:
+          error instanceof Error ? error.message : 'Failed to fetch versions',
+        isLoadingVersions: false,
       });
     }
   },
@@ -482,7 +566,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
             ...get().currentNote!,
             title: version.title,
             content: version.content,
-          }
+          },
         });
       }
 
@@ -499,18 +583,26 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
       );
     } catch (error) {
       console.error('Error restoring version:', error);
-      set({ versionError: error instanceof Error ? error.message : 'Failed to restore version' });
+      set({
+        versionError:
+          error instanceof Error ? error.message : 'Failed to restore version',
+      });
     }
   },
 
   deleteVersion: async (versionId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     try {
-      const response = await fetch(`/api/note-versions/version/${versionId}?userId=${user.id}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/note-versions/version/${versionId}?userId=${user.id}`,
+        {
+          method: 'DELETE',
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Failed to delete version');
@@ -520,9 +612,12 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
       set({ versions: get().versions.filter(v => v.id !== versionId) });
     } catch (error) {
       console.error('Error deleting version:', error);
-      set({ versionError: error instanceof Error ? error.message : 'Failed to delete version' });
+      set({
+        versionError:
+          error instanceof Error ? error.message : 'Failed to delete version',
+      });
     }
   },
 
-  setVersionError: (error) => set({ versionError: error })
+  setVersionError: error => set({ versionError: error }),
 }));
