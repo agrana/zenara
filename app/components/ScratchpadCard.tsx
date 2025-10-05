@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useScratchpadStore, type FormatType } from "../store/scratchpadStore";
 import { usePromptStore } from "../store/promptStore";

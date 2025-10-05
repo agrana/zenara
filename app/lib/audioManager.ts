@@ -67,10 +67,12 @@ class AudioManager {
   private userInteracted = false;
 
   constructor() {
-    // Add click event listener to handle user interaction
-    document.addEventListener('click', this.handleUserInteraction.bind(this));
-    document.addEventListener('keydown', this.handleUserInteraction.bind(this));
-    document.addEventListener('touchstart', this.handleUserInteraction.bind(this));
+    // Add click event listener to handle user interaction (only in browser)
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', this.handleUserInteraction.bind(this));
+      document.addEventListener('keydown', this.handleUserInteraction.bind(this));
+      document.addEventListener('touchstart', this.handleUserInteraction.bind(this));
+    }
   }
 
   private handleUserInteraction(): void {
