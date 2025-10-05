@@ -1,4 +1,6 @@
 declare module 'howler' {
+  export type HowlErrorCallback = (id: number, error: unknown) => void;
+
   export class Howl {
     constructor(options: any);
     play(): void;
@@ -9,7 +11,7 @@ declare module 'howler' {
     state(): string;
     once(event: string, callback: () => void): void;
   }
-  
+
   export class Howler {
     static ctx: AudioContext;
     static autoUnlock: boolean;

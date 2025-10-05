@@ -1,14 +1,17 @@
-import { Howl } from "howler";
+import { Howl } from 'howler';
 
-export type SoundType = 
-  | "none" 
-  | "crowd-talking" 
-  | "ocean-wave-1" 
-  | "ocean-wave-2" 
-  | "rain-07"
-  | "white-noise";
+export type SoundType =
+  | 'none'
+  | 'crowd-talking'
+  | 'ocean-wave-1'
+  | 'ocean-wave-2'
+  | 'rain-07'
+  | 'white-noise';
 
-export type AlertSound = "bell-ring-01" | "bell-ringing-03a" | "bell-ringing-05";
+export type AlertSound =
+  | 'bell-ring-01'
+  | 'bell-ringing-03a'
+  | 'bell-ringing-05';
 
 interface Sound {
   howl: Howl | null;
@@ -18,50 +21,50 @@ interface Sound {
 
 class AudioManager {
   private sounds: Record<SoundType, Sound> = {
-    "none": { howl: null, url: "" },
-    "crowd-talking": { 
-      howl: null, 
-      url: "/sounds/crowd-talking-2.mp3", 
-      loop: true 
+    none: { howl: null, url: '' },
+    'crowd-talking': {
+      howl: null,
+      url: '/sounds/crowd-talking-2.mp3',
+      loop: true,
     },
-    "ocean-wave-1": { 
-      howl: null, 
-      url: "/sounds/ocean-wave-1.mp3", 
-      loop: true 
+    'ocean-wave-1': {
+      howl: null,
+      url: '/sounds/ocean-wave-1.mp3',
+      loop: true,
     },
-    "ocean-wave-2": { 
-      howl: null, 
-      url: "/sounds/ocean-wave-2.mp3", 
-      loop: true 
+    'ocean-wave-2': {
+      howl: null,
+      url: '/sounds/ocean-wave-2.mp3',
+      loop: true,
     },
-    "rain-07": { 
-      howl: null, 
-      url: "/sounds/rain-07.mp3", 
-      loop: true 
+    'rain-07': {
+      howl: null,
+      url: '/sounds/rain-07.mp3',
+      loop: true,
     },
-    "white-noise": { 
-      howl: null, 
-      url: "/sounds/03-White-Noise-10min.mp3", 
-      loop: true 
+    'white-noise': {
+      howl: null,
+      url: '/sounds/03-White-Noise-10min.mp3',
+      loop: true,
     },
   };
 
   private alerts: Record<AlertSound, Sound> = {
-    "bell-ring-01": { 
-      howl: null, 
-      url: "/sounds/bell-ring-01.mp3" 
+    'bell-ring-01': {
+      howl: null,
+      url: '/sounds/bell-ring-01.mp3',
     },
-    "bell-ringing-03a": { 
-      howl: null, 
-      url: "/sounds/bell-ringing-03a.mp3" 
+    'bell-ringing-03a': {
+      howl: null,
+      url: '/sounds/bell-ringing-03a.mp3',
     },
-    "bell-ringing-05": { 
-      howl: null, 
-      url: "/sounds/bell-ringing-05.mp3" 
-    }
+    'bell-ringing-05': {
+      howl: null,
+      url: '/sounds/bell-ringing-05.mp3',
+    },
   };
 
-  private currentSound: SoundType = "none";
+  private currentSound: SoundType = 'none';
   private initialized = false;
   private audioContext: AudioContext | null = null;
   private userInteracted = false;
@@ -70,8 +73,14 @@ class AudioManager {
     // Add click event listener to handle user interaction (only in browser)
     if (typeof document !== 'undefined') {
       document.addEventListener('click', this.handleUserInteraction.bind(this));
-      document.addEventListener('keydown', this.handleUserInteraction.bind(this));
-      document.addEventListener('touchstart', this.handleUserInteraction.bind(this));
+      document.addEventListener(
+        'keydown',
+        this.handleUserInteraction.bind(this)
+      );
+      document.addEventListener(
+        'touchstart',
+        this.handleUserInteraction.bind(this)
+      );
     }
   }
 
@@ -89,10 +98,12 @@ class AudioManager {
       // Create and resume audio context
       this.audioContext = new AudioContext();
       await this.audioContext.resume();
-      
+
       // Initialize with a silent sound
       const silentSound = new Howl({
-        src: ['data:audio/wav;base64,UklGRnoCAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoCAgAAAAA='],
+        src: [
+          'data:audio/wav;base64,UklGRnoCAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoCAgAAAAA=',
+        ],
         volume: 0,
         onload: () => {
           this.initialized = true;
@@ -100,12 +111,12 @@ class AudioManager {
           // Preload all sounds after initialization
           this.preloadSounds();
         },
-        onloaderror: (_: number, err: Error) => {
+        onloaderror: (_: number, err: unknown) => {
           console.error('Error initializing audio:', err);
           this.initialized = true; // Still mark as initialized even if silent sound fails
           // Preload all sounds even if initialization fails
           this.preloadSounds();
-        }
+        },
       });
       silentSound.play();
     } catch (error) {
@@ -116,7 +127,7 @@ class AudioManager {
   private preloadSounds(): void {
     // Preload all sounds
     Object.entries(this.sounds).forEach(([type, sound]) => {
-      if (type !== "none" && sound.url) {
+      if (type !== 'none' && sound.url) {
         this.getSound(type as SoundType);
       }
     });
@@ -133,7 +144,7 @@ class AudioManager {
     if (!this.audioContext) {
       this.audioContext = new AudioContext();
     }
-    
+
     if (this.audioContext.state === 'suspended') {
       try {
         await this.audioContext.resume();
@@ -152,7 +163,7 @@ class AudioManager {
       html5: true,
       preload: true,
       onload: () => console.log(`Sound loaded: ${sound.url}`),
-      onloaderror: (_: number, err: Error) => {
+      onloaderror: (_: number, err: unknown) => {
         console.error(`Error loading sound:`, err);
         // Try to load the sound again after a delay
         setTimeout(() => {
@@ -162,11 +173,11 @@ class AudioManager {
           }
         }, 1000);
       },
-      onplayerror: (_: number, err: Error) => {
+      onplayerror: (_: number, err: unknown) => {
         console.error(`Error playing sound:`, err);
         // Try to resume audio context if there's a play error
         this.resumeAudioContext();
-      }
+      },
     });
   }
 
@@ -201,12 +212,12 @@ class AudioManager {
       // Ensure audio context is resumed
       await this.resumeAudioContext();
 
-      if (this.currentSound !== "none") {
+      if (this.currentSound !== 'none') {
         this.stopSound();
       }
 
-      if (type === "none") {
-        this.currentSound = "none";
+      if (type === 'none') {
+        this.currentSound = 'none';
         return;
       }
 
@@ -231,16 +242,16 @@ class AudioManager {
   }
 
   stopSound(): void {
-    if (this.currentSound !== "none") {
+    if (this.currentSound !== 'none') {
       const sound = this.sounds[this.currentSound];
       if (sound.howl) {
         sound.howl.stop();
       }
-      this.currentSound = "none";
+      this.currentSound = 'none';
     }
   }
 
-  async playAlert(type: AlertSound = "bell-ring-01"): Promise<void> {
+  async playAlert(type: AlertSound = 'bell-ring-01'): Promise<void> {
     if (!this.userInteracted) {
       console.log('Waiting for user interaction before playing alert');
       return;
@@ -274,7 +285,7 @@ class AudioManager {
   }
 
   setVolume(volume: number): void {
-    if (this.currentSound !== "none") {
+    if (this.currentSound !== 'none') {
       const sound = this.sounds[this.currentSound];
       if (sound.howl) {
         sound.howl.volume(volume);
