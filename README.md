@@ -33,37 +33,43 @@ A productivity and focus app featuring a Pomodoro timer, task management, AI-pow
 ### Installation
 
 1. **Clone the repository**
-   ```bash
+
+```bash
    git clone <your-repo-url>
    cd zenara
-   ```
+```
 
 2. **Install dependencies**
-   ```bash
+
+```bash
    npm install
-   ```
+```
 
 3. **Set up environment variables**
-   ```bash
+
+```bash
    cp env.example .env
-   ```
-   
-   Edit `.env` and add your credentials:
-   - `SUPABASE_URL` - Your Supabase project URL
-   - `SUPABASE_ANON_KEY` - Your Supabase anonymous key
-   - `OPENAI_API_KEY` - Your OpenAI API key
+```
+
+Edit `.env` and add your credentials:
+
+- `SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_ANON_KEY` - Your Supabase anonymous key
+- `OPENAI_API_KEY` - Your OpenAI API key
 
 4. **Run development servers**
-   
+
    In one terminal (backend):
-   ```bash
-   npm run dev
-   ```
-   
-   In another terminal (frontend):
-   ```bash
+
+```bash
+npm run dev
+```
+
+In another terminal (frontend):
+
+```bash
    npm run dev:client
-   ```
+```
 
 5. **Open your browser**
    - Frontend: http://localhost:5173
@@ -74,19 +80,21 @@ A productivity and focus app featuring a Pomodoro timer, task management, AI-pow
 ### Deploy to Vercel
 
 1. **Push your code to GitHub**
-   ```bash
+
+```bash
    git add .
    git commit -m "Ready for deployment"
    git push
-   ```
+```
 
 2. **Deploy with Vercel CLI**
-   ```bash
+
+```bash
    npm i -g vercel
    vercel
-   ```
+```
 
-   Or connect your GitHub repo in the Vercel dashboard.
+Or connect your GitHub repo in the Vercel dashboard.
 
 3. **Set environment variables in Vercel**
    - Go to your project settings in Vercel
@@ -138,21 +146,25 @@ zenara/
 ## API Endpoints
 
 ### Tasks
+
 - `GET /api/tasks` - Get all tasks
 - `POST /api/tasks` - Create task
 - `PATCH /api/tasks/:id` - Update task
 - `DELETE /api/tasks/:id` - Delete task
 
 ### Pomodoro
+
 - `GET /api/pomodoro-sessions` - Get sessions
 - `POST /api/pomodoro-sessions` - Create session
 
 ### Notes
+
 - `POST /api/process-note` - Process note with AI
 - `POST /api/process-note-stream` - Stream AI processing
 - `GET /api/note-versions/:noteId` - Get note versions
 
 ### Prompts
+
 - `GET /api/prompts` - Get all prompts
 - `POST /api/prompts` - Create custom prompt
 - `GET /api/prompts/templates/types` - Get template types
@@ -162,11 +174,13 @@ See `/Users/alfonsograna/zenara/server/routes.ts` for complete API documentation
 ## Environment Variables
 
 Required:
+
 - `SUPABASE_URL` - Supabase project URL
 - `SUPABASE_ANON_KEY` - Supabase anonymous key
 - `OPENAI_API_KEY` - OpenAI API key
 
 Optional:
+
 - `PORT` - Server port (default: 3000)
 - `OPENAI_MODEL` - AI model (default: gpt-4o-mini)
 - `DATABASE_URL` - Direct Postgres connection (if not using Supabase)
