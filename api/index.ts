@@ -1,12 +1,17 @@
 // Vercel serverless function - Complete API implementation
 import express from 'express';
-import { storage } from '../server/storage';
-import { ProcessingService } from '../server/processingService';
-import { PromptService } from '../server/promptService';
-import { NoteVersionService } from '../server/noteVersionService';
+import { storage } from './lib/storage';
+import { ProcessingService } from './lib/processingService';
+import { PromptService } from './lib/promptService';
+import { NoteVersionService } from './lib/noteVersionService';
 import OpenAI from 'openai';
 import { z } from 'zod';
-import type { InsertTask, InsertPomodoroSession, InsertScratchpad, InsertSettings } from '../shared/schema';
+import type {
+  InsertTask,
+  InsertPomodoroSession,
+  InsertScratchpad,
+  InsertSettings,
+} from '../shared/schema';
 
 const app = express();
 app.use(express.json());
@@ -14,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Initialize OpenAI
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || ""
+  apiKey: process.env.OPENAI_API_KEY || '',
 });
 
 // Zod schemas
@@ -22,34 +27,40 @@ const insertTaskSchema = z.object({
   userId: z.number(),
   title: z.string(),
   description: z.string().optional(),
-  completed: z.boolean().optional()
+  completed: z.boolean().optional(),
 }) satisfies z.ZodType<InsertTask>;
 
 const insertPomodoroSessionSchema = z.object({
   userId: z.number(),
   taskId: z.number().optional(),
   duration: z.number(),
-  completed: z.boolean().optional()
+  completed: z.boolean().optional(),
 }) satisfies z.ZodType<InsertPomodoroSession>;
 
 const insertScratchpadSchema = z.object({
   userId: z.number(),
-  content: z.string()
+  content: z.string(),
 }) satisfies z.ZodType<InsertScratchpad>;
 
 const insertSettingsSchema = z.object({
   userId: z.number(),
   theme: z.string().optional(),
-  notifications: z.boolean().optional()
+  notifications: z.boolean().optional(),
 }) satisfies z.ZodType<InsertSettings>;
 
-function validateBody<T>(schema: z.ZodType<T>, body: any): { success: true, data: T } | { success: false, error: string } {
+function validateBody<T>(
+  schema: z.ZodType<T>,
+  body: any
+): { success: true; data: T } | { success: false; error: string } {
   try {
     const result = schema.parse(body);
     return { success: true, data: result };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors.map(e => `${e.path}: ${e.message}`).join(', ') };
+      return {
+        success: false,
+        error: error.errors.map(e => `${e.path}: ${e.message}`).join(', '),
+      };
     }
     return { success: false, error: 'Invalid request data' };
   }
@@ -61,39 +72,49 @@ app.get('/api/health', (req, res) => {
 });
 
 // Process note content with AI
-app.post("/api/process-content", async (req, res) => {
+app.post('/api/process-content', async (req, res) => {
   try {
     const { content, format } = req.body;
     if (!content) {
-      return res.status(400).json({ error: "Content is required" });
+      return res.status(400).json({ error: 'Content is required' });
     }
     if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({ error: "OpenAI API key not configured", processedContent: content });
+      return res
+        .status(500)
+        .json({
+          error: 'OpenAI API key not configured',
+          processedContent: content,
+        });
     }
 
-    let systemPrompt = "";
+    let systemPrompt = '';
     switch (format) {
-      case "diary":
-        systemPrompt = "You're helping organize a personal diary entry. Structure the text with proper formatting, fix any typos, and organize thoughts clearly. Use markdown for headings and lists. Keep the personal tone intact.";
+      case 'diary':
+        systemPrompt =
+          "You're helping organize a personal diary entry. Structure the text with proper formatting, fix any typos, and organize thoughts clearly. Use markdown for headings and lists. Keep the personal tone intact.";
         break;
-      case "meeting":
-        systemPrompt = "You're helping organize meeting notes. Extract and highlight key points, decisions, and action items. Structure with clear headings, lists, and tables if appropriate. Use markdown formatting.";
+      case 'meeting':
+        systemPrompt =
+          "You're helping organize meeting notes. Extract and highlight key points, decisions, and action items. Structure with clear headings, lists, and tables if appropriate. Use markdown formatting.";
         break;
-      case "braindump":
-        systemPrompt = "You're helping organize a brain dump of thoughts. Categorize ideas, identify themes, and structure the content logically. Keep the original thoughts but improve clarity. Use markdown formatting.";
+      case 'braindump':
+        systemPrompt =
+          "You're helping organize a brain dump of thoughts. Categorize ideas, identify themes, and structure the content logically. Keep the original thoughts but improve clarity. Use markdown formatting.";
         break;
-      case "brainstorm":
-        systemPrompt = "You're helping refine a brainstorming session. Organize ideas by theme, suggest potential action items, and create a structured document with pros/cons where appropriate. Use markdown formatting.";
+      case 'brainstorm':
+        systemPrompt =
+          "You're helping refine a brainstorming session. Organize ideas by theme, suggest potential action items, and create a structured document with pros/cons where appropriate. Use markdown formatting.";
         break;
       default:
-        systemPrompt = "Improve this text by organizing it with proper markdown structure. Fix minor typos and formatting issues while preserving the original content and meaning.";
+        systemPrompt =
+          'Improve this text by organizing it with proper markdown structure. Fix minor typos and formatting issues while preserving the original content and meaning.';
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: 'gpt-4o',
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content }
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content },
       ],
       temperature: 0.7,
       max_tokens: 1500,
@@ -101,8 +122,13 @@ app.post("/api/process-content", async (req, res) => {
 
     res.json({ processedContent: response.choices[0].message.content });
   } catch (error) {
-    console.error("Error processing content:", error);
-    res.status(500).json({ error: "Failed to process content", processedContent: req.body.content });
+    console.error('Error processing content:', error);
+    res
+      .status(500)
+      .json({
+        error: 'Failed to process content',
+        processedContent: req.body.content,
+      });
   }
 });
 
@@ -226,7 +252,11 @@ app.get('/api/note-versions/:noteId', async (req, res) => {
     }
     const versionService = NoteVersionService.getInstance();
     const versions = limit
-      ? await versionService.getLatestVersions(noteId, userId as string, parseInt(limit as string))
+      ? await versionService.getLatestVersions(
+          noteId,
+          userId as string,
+          parseInt(limit as string)
+        )
       : await versionService.getVersionsByNoteId(noteId, userId as string);
     res.json(versions);
   } catch (error) {
@@ -243,7 +273,10 @@ app.get('/api/note-versions/version/:versionId', async (req, res) => {
       return res.status(400).json({ error: 'userId is required' });
     }
     const versionService = NoteVersionService.getInstance();
-    const version = await versionService.getVersionById(versionId, userId as string);
+    const version = await versionService.getVersionById(
+      versionId,
+      userId as string
+    );
     if (!version) {
       return res.status(404).json({ error: 'Version not found' });
     }
@@ -256,13 +289,31 @@ app.get('/api/note-versions/version/:versionId', async (req, res) => {
 
 app.post('/api/note-versions', async (req, res) => {
   try {
-    const { noteId, userId, title, content, format, isProcessed, processingMetadata } = req.body;
+    const {
+      noteId,
+      userId,
+      title,
+      content,
+      format,
+      isProcessed,
+      processingMetadata,
+    } = req.body;
     if (!noteId || !userId || !title || !content || !format) {
-      return res.status(400).json({ error: 'noteId, userId, title, content, and format are required' });
+      return res
+        .status(400)
+        .json({
+          error: 'noteId, userId, title, content, and format are required',
+        });
     }
     const versionService = NoteVersionService.getInstance();
     const version = await versionService.createVersion({
-      noteId, userId, title, content, format, isProcessed, processingMetadata
+      noteId,
+      userId,
+      title,
+      content,
+      format,
+      isProcessed,
+      processingMetadata,
     });
     res.status(201).json(version);
   } catch (error) {
@@ -341,7 +392,10 @@ app.post('/api/process-note', async (req, res) => {
     }
     const processingService = ProcessingService.getInstance();
     const result = await processingService.processNote(content, {
-      promptId, promptType: promptType || 'default', customPrompt, userId
+      promptId,
+      promptType: promptType || 'default',
+      customPrompt,
+      userId,
     });
     if (result.success) {
       res.json(result);
@@ -365,12 +419,15 @@ app.post('/api/process-note-stream', async (req, res) => {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    
+
     const processingService = ProcessingService.getInstance();
     const stream = await processingService.processNoteStream(content, {
-      promptId, promptType: promptType || 'default', customPrompt, userId
+      promptId,
+      promptType: promptType || 'default',
+      customPrompt,
+      userId,
     });
-    
+
     const reader = stream.getReader();
     try {
       while (true) {
@@ -417,7 +474,10 @@ app.get('/api/prompts/template/:templateType', async (req, res) => {
     const { templateType } = req.params;
     const { userId } = req.query;
     const promptService = PromptService.getInstance();
-    const prompts = await promptService.getPromptsByType(templateType, userId as string);
+    const prompts = await promptService.getPromptsByType(
+      templateType,
+      userId as string
+    );
     res.json(prompts);
   } catch (error) {
     console.error('Error getting prompts by type:', error);
@@ -445,11 +505,17 @@ app.post('/api/prompts', async (req, res) => {
   try {
     const { userId, name, templateType, promptText, isDefault } = req.body;
     if (!name || !templateType || !promptText) {
-      return res.status(400).json({ error: 'Name, templateType, and promptText are required' });
+      return res
+        .status(400)
+        .json({ error: 'Name, templateType, and promptText are required' });
     }
     const promptService = PromptService.getInstance();
     const prompt = await promptService.createPrompt({
-      userId, name, templateType, promptText, isDefault
+      userId,
+      name,
+      templateType,
+      promptText,
+      isDefault,
     });
     res.status(201).json(prompt);
   } catch (error) {
@@ -463,7 +529,11 @@ app.put('/api/prompts/:id', async (req, res) => {
     const { id } = req.params;
     const { name, promptText, isActive } = req.body;
     const promptService = PromptService.getInstance();
-    const prompt = await promptService.updatePrompt(id, { name, promptText, isActive });
+    const prompt = await promptService.updatePrompt(id, {
+      name,
+      promptText,
+      isActive,
+    });
     res.json(prompt);
   } catch (error) {
     console.error('Error updating prompt:', error);
