@@ -48,6 +48,20 @@ resource "vercel_project_environment_variable" "supabase_anon_key" {
   target     = ["production", "preview", "development"]
 }
 
+resource "vercel_project_environment_variable" "next_public_supabase_url" {
+  project_id = vercel_project.main.id
+  key        = "NEXT_PUBLIC_SUPABASE_URL"
+  value      = var.supabase_url
+  target     = ["production", "preview", "development"]
+}
+
+resource "vercel_project_environment_variable" "next_public_supabase_anon_key" {
+  project_id = vercel_project.main.id
+  key        = "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+  value      = var.supabase_anon_key
+  target     = ["production", "preview", "development"]
+}
+
 resource "vercel_project_environment_variable" "supabase_url_backend" {
   project_id = vercel_project.main.id
   key        = "SUPABASE_URL"
