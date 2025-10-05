@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useScratchpadStore, type NoteVersion } from '@/store/scratchpadStore';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '../ui/button';
+import { ScrollArea } from '../ui/scroll-area';
+import { Separator } from '../ui/separator';
 import { History, RotateCcw, Trash2, Sparkles, FileText } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import {
@@ -12,7 +12,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
+} from '../ui/sheet';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +22,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '../ui/alert-dialog';
 
 interface VersionHistoryProps {
   noteId: string;

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAppStore } from "@/store/appStore";
 import { RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 
 export default function Quote() {
   const { quote, refreshQuote, quoteRotation, setQuoteRotation } = useAppStore();

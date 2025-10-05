@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { useTaskStore, type Task } from "@/store/taskStore";
 import { usePomodoroStore } from "@/store/pomodoroStore";
 import { formatDateRelative, formatTimeSpent } from "@/lib/formatDate";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Input } from "@/components/ui/input";
+import { Button } from "../ui/button";
+import { Card, CardHeader, CardContent } from "../ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Input } from "../ui/input";
 import { ChevronDown, ChevronUp, Plus, Check, Clock, Pencil, Trash2 } from "lucide-react";
 import {
   Dialog,
@@ -13,10 +13,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+} from "../ui/dialog";
+import { Checkbox } from "../ui/checkbox";
+import { Badge } from "../ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
 export default function TaskListCard() {
   const [isOpen, setIsOpen] = useState(true); // Start open by default

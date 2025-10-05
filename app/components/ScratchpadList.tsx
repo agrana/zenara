@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useScratchpadStore } from '@/store/scratchpadStore';
-import { Button } from '@/components/ui/button';
+import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
 
 interface ScratchpadListProps {

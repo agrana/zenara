@@ -3,11 +3,11 @@ import { usePomodoroStore } from "@/store/pomodoroStore";
 import { useTaskStore, type Task } from "@/store/taskStore";
 import { formatDuration } from "@/lib/formatDate";
 import { audioManager, type SoundType, type AlertSound } from "@/lib/audioManager";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "../ui/button";
+import { Card, CardHeader, CardContent } from "../ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Progress } from "../ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { ChevronDown, ChevronUp, Volume2, X } from "lucide-react";
 import {
   Dialog,
@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from "../ui/dialog";
 
 export default function PomodoroCard() {
   const [isOpen, setIsOpen] = useState(true); // Start open by default

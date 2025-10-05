@@ -98,7 +98,7 @@ class AudioManager {
           // Preload all sounds after initialization
           this.preloadSounds();
         },
-        onloaderror: (_, err) => {
+        onloaderror: (_: number, err: Error) => {
           console.error('Error initializing audio:', err);
           this.initialized = true; // Still mark as initialized even if silent sound fails
           // Preload all sounds even if initialization fails
@@ -150,7 +150,7 @@ class AudioManager {
       html5: true,
       preload: true,
       onload: () => console.log(`Sound loaded: ${sound.url}`),
-      onloaderror: (_, err) => {
+      onloaderror: (_: number, err: Error) => {
         console.error(`Error loading sound:`, err);
         // Try to load the sound again after a delay
         setTimeout(() => {
@@ -160,7 +160,7 @@ class AudioManager {
           }
         }, 1000);
       },
-      onplayerror: (_, err) => {
+      onplayerror: (_: number, err: Error) => {
         console.error(`Error playing sound:`, err);
         // Try to resume audio context if there's a play error
         this.resumeAudioContext();

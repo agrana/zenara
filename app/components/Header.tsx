@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { useAppStore } from "../store/appStore";
 import { Sun, Moon, Settings } from "lucide-react";
 import {
@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
