@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
 import { useAppStore } from '../store/appStore';
 import { useAuth } from '../lib/AuthContext';
 import Login from './Login';
@@ -15,8 +14,6 @@ import AppButton from '../components/AppButton';
 
 export default function Home() {
   const { user, loading } = useAuth();
-  const darkMode = useAppStore(state => state.darkMode);
-  const { setTheme } = useTheme();
   const [hydrated, setHydrated] = useState(false);
 
   // App visibility states
@@ -29,13 +26,6 @@ export default function Home() {
     useAppStore.persist.rehydrate();
     setHydrated(true);
   }, []);
-
-  // Sync dark mode with theme system
-  useEffect(() => {
-    if (hydrated) {
-      setTheme(darkMode ? 'dark' : 'light');
-    }
-  }, [darkMode, setTheme, hydrated]);
 
   // Direct handlers to open apps
   const openPomodoro = () => setPomodoroVisible(true);
