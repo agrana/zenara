@@ -73,7 +73,9 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
       // Check if response is actually JSON
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
-        console.warn('Prompts API returned non-JSON response, using default prompts only');
+        console.warn(
+          'Prompts API returned non-JSON response, using default prompts only'
+        );
         set({ prompts: [], isLoading: false });
         return;
       }
@@ -85,7 +87,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
       // Don't show error to user, just use empty prompts (defaults will still work)
       set({
         prompts: [],
-        isLoading: false
+        isLoading: false,
       });
     }
   },
@@ -106,8 +108,11 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
     } catch (error) {
       console.error('Error fetching prompts by type:', error);
       set({
-        error: error instanceof Error ? error.message : 'Failed to fetch prompts by type',
-        isLoading: false
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch prompts by type',
+        isLoading: false,
       });
     }
   },
@@ -122,14 +127,45 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
         if (response.status === 404) {
           console.warn('Template types API not available, using default types');
           const defaultTypes = {
-            diary: { name: 'Diary Enhancement', description: 'Improves grammar, flow, and adds descriptive language while maintaining personal tone' },
-            meeting: { name: 'Meeting Notes Organization', description: 'Structures meeting notes with clear headings, action items, and key decisions' },
-            braindump: { name: 'Brain Dump Organization', description: 'Categorizes thoughts into logical groups and creates clear structure' },
-            brainstorm: { name: 'Brainstorm Enhancement', description: 'Expands on ideas, adds variations, and suggests implementation steps' },
-            summary: { name: 'Content Summarization', description: 'Creates concise summaries while preserving key information' },
-            expand: { name: 'Content Expansion', description: 'Expands brief content with more detail, examples, and context' },
-            translate: { name: 'Language Translation', description: 'Translates content to different languages while preserving meaning' },
-            default: { name: 'General Note Enhancement', description: 'General purpose enhancement for any type of note' }
+            diary: {
+              name: 'Diary Enhancement',
+              description:
+                'Improves grammar, flow, and adds descriptive language while maintaining personal tone',
+            },
+            meeting: {
+              name: 'Meeting Notes Organization',
+              description:
+                'Structures meeting notes with clear headings, action items, and key decisions',
+            },
+            braindump: {
+              name: 'Brain Dump Organization',
+              description:
+                'Categorizes thoughts into logical groups and creates clear structure',
+            },
+            brainstorm: {
+              name: 'Brainstorm Enhancement',
+              description:
+                'Expands on ideas, adds variations, and suggests implementation steps',
+            },
+            summary: {
+              name: 'Content Summarization',
+              description:
+                'Creates concise summaries while preserving key information',
+            },
+            expand: {
+              name: 'Content Expansion',
+              description:
+                'Expands brief content with more detail, examples, and context',
+            },
+            translate: {
+              name: 'Language Translation',
+              description:
+                'Translates content to different languages while preserving meaning',
+            },
+            default: {
+              name: 'General Note Enhancement',
+              description: 'General purpose enhancement for any type of note',
+            },
           };
           set({ templateTypes: defaultTypes, isLoading: false });
           return;
@@ -140,16 +176,49 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
       // Check if response is actually JSON
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
-        console.warn('Template types API returned non-JSON response, using default types');
+        console.warn(
+          'Template types API returned non-JSON response, using default types'
+        );
         const defaultTypes = {
-          diary: { name: 'Diary Enhancement', description: 'Improves grammar, flow, and adds descriptive language while maintaining personal tone' },
-          meeting: { name: 'Meeting Notes Organization', description: 'Structures meeting notes with clear headings, action items, and key decisions' },
-          braindump: { name: 'Brain Dump Organization', description: 'Categorizes thoughts into logical groups and creates clear structure' },
-          brainstorm: { name: 'Brainstorm Enhancement', description: 'Expands on ideas, adds variations, and suggests implementation steps' },
-          summary: { name: 'Content Summarization', description: 'Creates concise summaries while preserving key information' },
-          expand: { name: 'Content Expansion', description: 'Expands brief content with more detail, examples, and context' },
-          translate: { name: 'Language Translation', description: 'Translates content to different languages while preserving meaning' },
-          default: { name: 'General Note Enhancement', description: 'General purpose enhancement for any type of note' }
+          diary: {
+            name: 'Diary Enhancement',
+            description:
+              'Improves grammar, flow, and adds descriptive language while maintaining personal tone',
+          },
+          meeting: {
+            name: 'Meeting Notes Organization',
+            description:
+              'Structures meeting notes with clear headings, action items, and key decisions',
+          },
+          braindump: {
+            name: 'Brain Dump Organization',
+            description:
+              'Categorizes thoughts into logical groups and creates clear structure',
+          },
+          brainstorm: {
+            name: 'Brainstorm Enhancement',
+            description:
+              'Expands on ideas, adds variations, and suggests implementation steps',
+          },
+          summary: {
+            name: 'Content Summarization',
+            description:
+              'Creates concise summaries while preserving key information',
+          },
+          expand: {
+            name: 'Content Expansion',
+            description:
+              'Expands brief content with more detail, examples, and context',
+          },
+          translate: {
+            name: 'Language Translation',
+            description:
+              'Translates content to different languages while preserving meaning',
+          },
+          default: {
+            name: 'General Note Enhancement',
+            description: 'General purpose enhancement for any type of note',
+          },
         };
         set({ templateTypes: defaultTypes, isLoading: false });
         return;
@@ -161,18 +230,49 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
       console.error('Error fetching template types:', error);
       // Use default template types as fallback
       const defaultTypes = {
-        diary: { name: 'Diary Enhancement', description: 'Improves grammar, flow, and adds descriptive language while maintaining personal tone' },
-        meeting: { name: 'Meeting Notes Organization', description: 'Structures meeting notes with clear headings, action items, and key decisions' },
-        braindump: { name: 'Brain Dump Organization', description: 'Categorizes thoughts into logical groups and creates clear structure' },
-        brainstorm: { name: 'Brainstorm Enhancement', description: 'Expands on ideas, adds variations, and suggests implementation steps' },
-        summary: { name: 'Content Summarization', description: 'Creates concise summaries while preserving key information' },
-        expand: { name: 'Content Expansion', description: 'Expands brief content with more detail, examples, and context' },
-        translate: { name: 'Language Translation', description: 'Translates content to different languages while preserving meaning' },
-        default: { name: 'General Note Enhancement', description: 'General purpose enhancement for any type of note' }
+        diary: {
+          name: 'Diary Enhancement',
+          description:
+            'Improves grammar, flow, and adds descriptive language while maintaining personal tone',
+        },
+        meeting: {
+          name: 'Meeting Notes Organization',
+          description:
+            'Structures meeting notes with clear headings, action items, and key decisions',
+        },
+        braindump: {
+          name: 'Brain Dump Organization',
+          description:
+            'Categorizes thoughts into logical groups and creates clear structure',
+        },
+        brainstorm: {
+          name: 'Brainstorm Enhancement',
+          description:
+            'Expands on ideas, adds variations, and suggests implementation steps',
+        },
+        summary: {
+          name: 'Content Summarization',
+          description:
+            'Creates concise summaries while preserving key information',
+        },
+        expand: {
+          name: 'Content Expansion',
+          description:
+            'Expands brief content with more detail, examples, and context',
+        },
+        translate: {
+          name: 'Language Translation',
+          description:
+            'Translates content to different languages while preserving meaning',
+        },
+        default: {
+          name: 'General Note Enhancement',
+          description: 'General purpose enhancement for any type of note',
+        },
       };
       set({
         templateTypes: defaultTypes,
-        isLoading: false
+        isLoading: false,
       });
     }
   },
@@ -197,15 +297,16 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
       // Add to local state
       set(state => ({
         prompts: [prompt, ...state.prompts],
-        isLoading: false
+        isLoading: false,
       }));
 
       return prompt;
     } catch (error) {
       console.error('Error creating prompt:', error);
       set({
-        error: error instanceof Error ? error.message : 'Failed to create prompt',
-        isLoading: false
+        error:
+          error instanceof Error ? error.message : 'Failed to create prompt',
+        isLoading: false,
       });
       throw error;
     }
@@ -214,7 +315,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
   updatePrompt: async (id: string, data: UpdatePromptData) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`/.netlify/functions/prompts`, {
+      const response = await fetch(`/api/prompts/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -233,15 +334,16 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
         prompts: state.prompts.map(prompt =>
           prompt.id === id ? updatedPrompt : prompt
         ),
-        isLoading: false
+        isLoading: false,
       }));
 
       return updatedPrompt;
     } catch (error) {
       console.error('Error updating prompt:', error);
       set({
-        error: error instanceof Error ? error.message : 'Failed to update prompt',
-        isLoading: false
+        error:
+          error instanceof Error ? error.message : 'Failed to update prompt',
+        isLoading: false,
       });
       throw error;
     }
@@ -250,7 +352,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
   deletePrompt: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`/.netlify/functions/prompts`, {
+      const response = await fetch(`/api/prompts/${id}`, {
         method: 'DELETE',
       });
 
@@ -261,13 +363,14 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
       // Remove from local state
       set(state => ({
         prompts: state.prompts.filter(prompt => prompt.id !== id),
-        isLoading: false
+        isLoading: false,
       }));
     } catch (error) {
       console.error('Error deleting prompt:', error);
       set({
-        error: error instanceof Error ? error.message : 'Failed to delete prompt',
-        isLoading: false
+        error:
+          error instanceof Error ? error.message : 'Failed to delete prompt',
+        isLoading: false,
       });
       throw error;
     }
@@ -289,11 +392,11 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
     } catch (error) {
       console.error('Error getting prompt by ID:', error);
       set({
-        error: error instanceof Error ? error.message : 'Failed to get prompt'
+        error: error instanceof Error ? error.message : 'Failed to get prompt',
       });
       return null;
     }
   },
 
-  setError: (error) => set({ error })
+  setError: error => set({ error }),
 }));

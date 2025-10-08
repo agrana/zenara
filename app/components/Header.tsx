@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import { useAppStore } from '../store/appStore';
-import { Sun, Moon, Settings } from 'lucide-react';
+import { Sun, Moon, Settings, User } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,7 @@ import {
 } from '../ui/dropdown-menu';
 
 export default function Header() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   const backgroundRotation = useAppStore(state => state.backgroundRotation);
@@ -43,6 +45,16 @@ export default function Header() {
       </div>
 
       <div className='flex space-x-4 items-center'>
+        <Button
+          variant='ghost'
+          size='icon'
+          onClick={() => router.push('/profile')}
+          className='p-2 text-white rounded-full hover:bg-white/10 transition-colors'
+          title='Profile'
+        >
+          <User className='h-6 w-6' />
+        </Button>
+
         <Button
           variant='ghost'
           size='icon'
