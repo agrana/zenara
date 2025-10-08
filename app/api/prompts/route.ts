@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PromptService } from '../../lib/promptService';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 // GET /api/prompts
 export async function GET(request: NextRequest) {
@@ -20,10 +22,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, name, templateType, promptText, isDefault } = body;
+    const { name, templateType, promptText, isDefault } = body;
 
     console.log('Creating prompt with data:', {
-      userId,
       name,
       templateType,
       promptText: promptText?.substring(0, 50) + '...',
@@ -36,21 +37,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 401 }
-      );
+    // Get authenticated user from server-side Supabase client
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const promptService = PromptService.getInstance();
-    const prompt = await promptService.createPrompt({
-      userId,
-      name,
-      templateType,
-      promptText,
-      isDefault,
-    });
+    // Create prompt directly with server-side client (bypasses RLS issues)
+    const { data: prompt, error } = await supabase
+      .from('prompts')
+      .insert([
+        {
+          user_id: user.id,
+          name,
+          template_type: templateType,
+          prompt_text: promptText,
+          is_default: isDefault || false,
+          is_active: true,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase error creating prompt:', error);
+      return NextResponse.json(
+        { error: 'Failed to create prompt', details: error },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(prompt, { status: 201 });
   } catch (error) {
