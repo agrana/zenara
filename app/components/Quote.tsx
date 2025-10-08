@@ -21,17 +21,16 @@ export default function Quote() {
     }
   }, [mounted, quote, refreshQuote]);
 
-  if (!mounted) {
-    return null;
-  }
-
   return (
-    <div className='w-full max-w-3xl mx-auto mb-4 px-6 text-center relative group'>
+    <div
+      className='w-full max-w-3xl mx-auto mb-4 px-6 text-center relative group'
+      suppressHydrationWarning
+    >
       <blockquote className='font-serif text-lg md:text-xl font-medium italic text-white drop-shadow-lg'>
-        "{quote?.text}"
+        {mounted && quote ? `"${quote.text}"` : '""'}
       </blockquote>
       <p className='mt-2 text-sm font-medium text-white/90 drop-shadow-md'>
-        — {quote?.author}
+        {mounted && quote ? `— ${quote.author}` : '—'}
       </p>
       <Button
         variant='ghost'

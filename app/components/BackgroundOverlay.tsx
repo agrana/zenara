@@ -21,18 +21,17 @@ export default function BackgroundOverlay() {
     }
   }, [hydrated, background, refreshBackground]);
 
-  if (!hydrated) {
-    return null;
-  }
-
   return (
     <div
-      className='fixed inset-0 z-[-1] transition-opacity duration-1000 opacity-100 bg-cover bg-center bg-no-repeat'
+      className='fixed inset-0 z-[-1] transition-opacity duration-1000 bg-cover bg-center bg-no-repeat'
       style={{
-        backgroundImage: background?.url ? `url(${background.url})` : undefined,
+        opacity: hydrated ? 1 : 0,
+        backgroundImage:
+          hydrated && background?.url ? `url(${background.url})` : undefined,
         backgroundPosition: 'center',
         backgroundSize: 'cover',
       }}
+      suppressHydrationWarning
     >
       {/* Overlay for better text visibility */}
       <div className='absolute inset-0 bg-black/20'></div>

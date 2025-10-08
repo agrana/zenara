@@ -29,16 +29,12 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && theme) {
       // Set dark mode in app store based on theme
       const darkMode = theme === 'dark';
       useAppStore.getState().setDarkMode(darkMode);
     }
   }, [theme, mounted]);
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <header className='w-full pt-6 pb-2 px-4 flex justify-between items-center'>
@@ -52,8 +48,9 @@ export default function Header() {
           size='icon'
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           className='p-2 text-white rounded-full hover:bg-white/10 transition-colors'
+          suppressHydrationWarning
         >
-          {theme === 'dark' ? (
+          {mounted && theme === 'dark' ? (
             <Sun className='h-6 w-6' />
           ) : (
             <Moon className='h-6 w-6' />
