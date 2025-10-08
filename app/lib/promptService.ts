@@ -248,6 +248,8 @@ export class PromptService {
    */
   async createPrompt(data: CreatePromptData): Promise<Prompt> {
     try {
+      console.log('PromptService: Creating prompt with userId:', data.userId);
+
       const { data: prompt, error } = await supabase
         .from('prompts')
         .insert([
@@ -263,11 +265,16 @@ export class PromptService {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error creating prompt:', error);
+        throw error;
+      }
+
+      console.log('Prompt created successfully:', prompt?.id);
       return prompt;
     } catch (error) {
       console.error('Error creating prompt:', error);
-      throw new Error('Failed to create prompt');
+      throw error;
     }
   }
 
