@@ -76,7 +76,9 @@ Enhanced version:`
 1. Improving grammar and clarity
 2. Better organizing the content
 3. Adding structure where helpful
-4. Maintaining the original intent and tone
+4. Maintaining the original intent, tone and wording
+5. Avoid filling words
+6. Avoid jargon
 
 Original note:
 {content}
