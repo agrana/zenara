@@ -5,7 +5,7 @@ import { PromptService } from './promptService';
 
 // Initialize OpenAI with streaming support
 const llm = new ChatOpenAI({
-  modelName: 'gpt-5-2025-08-07', // Using mini for cost efficiency
+  modelName: 'gpt-4o-mini', // Using mini for cost efficiency
   temperature: 0.7,
   streaming: true,
   openAIApiKey: process.env.OPENAI_API_KEY,
