@@ -35,7 +35,7 @@ describe('API Authentication Tests', () => {
       mockCreateRouteHandlerClient.mockReturnValue(mockSupabaseClient as any);
       mockCookies.mockReturnValue({} as any);
 
-      const supabase = createRouteHandlerClient({ cookies: mockCookies() });
+      const supabase = createRouteHandlerClient({ cookies: mockCookies });
       const {
         data: { user },
         error,
@@ -59,7 +59,7 @@ describe('API Authentication Tests', () => {
       mockCreateRouteHandlerClient.mockReturnValue(mockSupabaseClient as any);
       mockCookies.mockReturnValue({} as any);
 
-      const supabase = createRouteHandlerClient({ cookies: mockCookies() });
+      const supabase = createRouteHandlerClient({ cookies: mockCookies });
       const {
         data: { user },
         error,
