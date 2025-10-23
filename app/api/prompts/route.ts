@@ -3,6 +3,21 @@ import { PromptService } from '../../lib/promptService';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
+// Utility function to normalize Supabase fields to camelCase
+function normalizePromptFields(prompt: any) {
+  return {
+    id: prompt.id,
+    userId: prompt.user_id,
+    name: prompt.name,
+    templateType: prompt.template_type,
+    promptText: prompt.prompt_text,
+    isDefault: prompt.is_default,
+    isActive: prompt.is_active,
+    createdAt: prompt.created_at,
+    updatedAt: prompt.updated_at,
+  };
+}
+
 // GET /api/prompts
 export async function GET(request: NextRequest) {
   try {
@@ -47,8 +62,13 @@ export async function GET(request: NextRequest) {
     const promptService = PromptService.getInstance();
     const defaultPrompts = await promptService.getUserPrompts(); // This returns defaults when no userId
 
+    // Normalize user prompts from snake_case to camelCase
+    const normalizedUserPrompts = (userPrompts || []).map(
+      normalizePromptFields
+    );
+
     // Combine user prompts with defaults
-    const allPrompts = [...(userPrompts || []), ...defaultPrompts];
+    const allPrompts = [...normalizedUserPrompts, ...defaultPrompts];
 
     return NextResponse.json(allPrompts);
   } catch (error) {
@@ -92,6 +112,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           id: 'mock-prompt-' + Date.now(),
+          userId: 'mock-user-id',
           name,
           templateType,
           promptText,
@@ -99,7 +120,6 @@ export async function POST(request: NextRequest) {
           isActive: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          userId: 'mock-user-id',
         },
         { status: 201 }
       );
@@ -141,7 +161,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(prompt, { status: 201 });
+    // Normalize the created prompt before returning
+    const normalizedPrompt = normalizePromptFields(prompt);
+    return NextResponse.json(normalizedPrompt, { status: 201 });
   } catch (error) {
     console.error('Error creating prompt:', error);
     const errorMessage =

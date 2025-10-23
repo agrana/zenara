@@ -3,6 +3,21 @@ import { PromptService } from '../../../lib/promptService';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
+// Utility function to normalize Supabase fields to camelCase
+function normalizePromptFields(prompt: any) {
+  return {
+    id: prompt.id,
+    userId: prompt.user_id,
+    name: prompt.name,
+    templateType: prompt.template_type,
+    promptText: prompt.prompt_text,
+    isDefault: prompt.is_default,
+    isActive: prompt.is_active,
+    createdAt: prompt.created_at,
+    updatedAt: prompt.updated_at,
+  };
+}
+
 // PUT /api/prompts/[id]
 export async function PUT(
   request: NextRequest,
@@ -60,7 +75,9 @@ export async function PUT(
       );
     }
 
-    return NextResponse.json(prompt);
+    // Normalize the updated prompt before returning
+    const normalizedPrompt = normalizePromptFields(prompt);
+    return NextResponse.json(normalizedPrompt);
   } catch (error) {
     console.error('Error updating prompt:', error);
     return NextResponse.json(
@@ -183,7 +200,9 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(prompt);
+    // Normalize the prompt before returning
+    const normalizedPrompt = normalizePromptFields(prompt);
+    return NextResponse.json(normalizedPrompt);
   } catch (error) {
     console.error('Error fetching prompt:', error);
     return NextResponse.json(
