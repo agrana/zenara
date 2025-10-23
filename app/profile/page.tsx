@@ -95,8 +95,12 @@ export default function ProfilePage() {
           promptText: formData.promptText,
         });
       } else {
+        if (!user) {
+          throw new Error('User not authenticated');
+        }
         await createPrompt({
           ...formData,
+          userId: user.id,
         } as CreatePromptData);
       }
       handleCloseDialog();

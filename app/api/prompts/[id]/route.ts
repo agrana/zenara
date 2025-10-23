@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PromptService } from '../../../lib/promptService';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 // PUT /api/prompts/[id]
 export async function PUT(
@@ -11,12 +13,38 @@ export async function PUT(
     const body = await request.json();
     const { name, promptText, isActive } = body;
 
-    const promptService = PromptService.getInstance();
-    const prompt = await promptService.updatePrompt(id, {
-      name,
-      promptText,
-      isActive,
-    });
+    // Get authenticated user
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Update prompt directly with server-side client
+    const { data: prompt, error } = await supabase
+      .from('prompts')
+      .update({
+        name,
+        prompt_text: promptText,
+        is_active: isActive,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .eq('user_id', user.id) // Ensure user owns the prompt
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase error updating prompt:', error);
+      return NextResponse.json(
+        { error: 'Failed to update prompt', details: error },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(prompt);
   } catch (error) {
@@ -36,8 +64,31 @@ export async function DELETE(
   try {
     const { id } = params;
 
-    const promptService = PromptService.getInstance();
-    await promptService.deletePrompt(id);
+    // Get authenticated user
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Delete prompt directly with server-side client
+    const { error } = await supabase
+      .from('prompts')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id); // Ensure user owns the prompt
+
+    if (error) {
+      console.error('Supabase error deleting prompt:', error);
+      return NextResponse.json(
+        { error: 'Failed to delete prompt', details: error },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -57,11 +108,34 @@ export async function GET(
   try {
     const { id } = params;
 
-    const promptService = PromptService.getInstance();
-    const prompt = await promptService.getPromptById(id);
+    // Get authenticated user
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
-    if (!prompt) {
-      return NextResponse.json({ error: 'Prompt not found' }, { status: 404 });
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get prompt directly with server-side client
+    const { data: prompt, error } = await supabase
+      .from('prompts')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', user.id) // Ensure user owns the prompt
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Prompt not found' }, { status: 404 });
+      }
+      console.error('Supabase error fetching prompt:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch prompt', details: error },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(prompt);

@@ -6,9 +6,38 @@ import { cookies } from 'next/headers';
 // GET /api/prompts
 export async function GET(request: NextRequest) {
   try {
+    // Get authenticated user
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user's custom prompts
+    const { data: userPrompts, error: userError } = await supabase
+      .from('prompts')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (userError) {
+      console.error('Error fetching user prompts:', userError);
+      // Don't throw, just log and continue with defaults
+    }
+
+    // Get default prompts from PromptService
     const promptService = PromptService.getInstance();
-    const prompts = await promptService.getUserPrompts();
-    return NextResponse.json(prompts);
+    const defaultPrompts = await promptService.getUserPrompts(); // This returns defaults when no userId
+
+    // Combine user prompts with defaults
+    const allPrompts = [...(userPrompts || []), ...defaultPrompts];
+
+    return NextResponse.json(allPrompts);
   } catch (error) {
     console.error('Error fetching prompts:', error);
     return NextResponse.json(
@@ -44,7 +73,10 @@ export async function POST(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
 
+    console.log('Auth check:', { user: user?.id, authError });
+
     if (authError || !user) {
+      console.error('Authentication failed:', authError);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

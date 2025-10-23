@@ -58,7 +58,12 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const url = '/api/prompts';
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (!response.ok) {
         // If the endpoint doesn't exist yet, fall back to default prompts
@@ -97,7 +102,12 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
     try {
       const url = '/api/prompts';
 
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (!response.ok) {
         throw new Error('Failed to fetch prompts by type');
@@ -120,7 +130,12 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
   fetchTemplateTypes: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch('/api/prompts/templates/types');
+      const response = await fetch('/api/prompts/templates/types', {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (!response.ok) {
         // If the endpoint doesn't exist yet, use hardcoded template types
@@ -282,6 +297,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
     try {
       const response = await fetch('/api/prompts', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -317,6 +333,7 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
     try {
       const response = await fetch(`/api/prompts/${id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -354,6 +371,10 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
     try {
       const response = await fetch(`/api/prompts/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -378,7 +399,12 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
 
   getPromptById: async (id: string) => {
     try {
-      const response = await fetch(`/api/prompts`);
+      const response = await fetch(`/api/prompts`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (!response.ok) {
         if (response.status === 404) {
