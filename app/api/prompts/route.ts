@@ -8,6 +8,15 @@ export async function GET(request: NextRequest) {
   try {
     // Get authenticated user
     const supabase = createRouteHandlerClient({ cookies });
+    
+    // Check if we're using a mock client (missing env vars)
+    if (supabase.supabaseUrl === 'https://placeholder.supabase.co') {
+      console.warn('Supabase not configured - returning default prompts for local development');
+      const promptService = PromptService.getInstance();
+      const defaultPrompts = await promptService.getUserPrompts();
+      return NextResponse.json(defaultPrompts);
+    }
+    
     const {
       data: { user },
       error: authError,
@@ -68,6 +77,23 @@ export async function POST(request: NextRequest) {
 
     // Get authenticated user from server-side Supabase client
     const supabase = createRouteHandlerClient({ cookies });
+    
+    // Check if we're using a mock client (missing env vars)
+    if (supabase.supabaseUrl === 'https://placeholder.supabase.co') {
+      console.warn('Supabase not configured - returning mock response for local development');
+      return NextResponse.json({
+        id: 'mock-prompt-' + Date.now(),
+        name,
+        templateType,
+        promptText,
+        isDefault: false,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        userId: 'mock-user-id'
+      }, { status: 201 });
+    }
+    
     const {
       data: { user },
       error: authError,

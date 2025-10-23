@@ -15,6 +15,13 @@ export async function PUT(
 
     // Get authenticated user
     const supabase = createRouteHandlerClient({ cookies });
+    
+    // Check if we're using a mock client (missing env vars)
+    if (supabase.supabaseUrl === 'https://placeholder.supabase.co') {
+      console.warn('Supabase not configured - returning mock response for local development');
+      return NextResponse.json({ error: 'Supabase not configured for local development' }, { status: 503 });
+    }
+    
     const {
       data: { user },
       error: authError,
