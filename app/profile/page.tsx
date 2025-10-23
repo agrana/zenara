@@ -136,7 +136,13 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <p>Please log in to access your profile.</p>
+        <div className='text-center'>
+          <p className='mb-4'>Please log in to access your profile.</p>
+          <p className='text-sm text-muted-foreground'>
+            Note: In local development, authentication requires Supabase
+            configuration. This feature works fully in Vercel deployment.
+          </p>
+        </div>
       </div>
     );
   }
@@ -175,6 +181,18 @@ export default function ProfilePage() {
         {error && (
           <div className='mb-4 p-4 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg'>
             {error}
+            {error.includes('Supabase not configured') && (
+              <div className='mt-2 text-sm'>
+                <p>
+                  This feature requires a Vercel deployment with proper
+                  environment variables.
+                </p>
+                <p>
+                  For local development, you can still view the default prompts
+                  below.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { PromptService } from '../lib/promptService';
 
 export interface Prompt {
   id: string;
@@ -70,6 +71,16 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
         if (response.status === 404) {
           console.warn('Prompts API not available, using default prompts only');
           set({ prompts: [], isLoading: false });
+          return;
+        }
+        // If Supabase is not configured (local development), use default prompts
+        if (response.status === 503) {
+          console.warn(
+            'Supabase not configured for local development, using default prompts only'
+          );
+          const promptService = PromptService.getInstance();
+          const defaultPrompts = await promptService.getUserPrompts();
+          set({ prompts: defaultPrompts, isLoading: false });
           return;
         }
         throw new Error('Failed to fetch prompts');
@@ -305,6 +316,13 @@ export const usePromptStore = create<PromptState>()((set, get) => ({
       });
 
       if (!response.ok) {
+        // If Supabase is not configured (local development), show helpful message
+        if (response.status === 503) {
+          const errorData = await response.json();
+          throw new Error(
+            'Supabase not configured for local development. This feature requires a Vercel deployment with proper environment variables.'
+          );
+        }
         throw new Error('Failed to create prompt');
       }
 
