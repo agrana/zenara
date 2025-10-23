@@ -9,7 +9,7 @@ const supabaseAnonKey =
 // Create a mock client for development when env vars are missing
 const createMockClient = () => {
   console.warn(
-    'Using mock Supabase client - set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
+    'Using mock Supabase client for local development - set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY for real functionality'
   );
   return createClient(
     'https://placeholder.supabase.co',

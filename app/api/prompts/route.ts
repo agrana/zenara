@@ -3,12 +3,74 @@ import { PromptService } from '../../lib/promptService';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
+// Utility function to normalize Supabase fields to camelCase
+function normalizePromptFields(prompt: any) {
+  return {
+    id: prompt.id,
+    userId: prompt.user_id,
+    name: prompt.name,
+    templateType: prompt.template_type,
+    promptText: prompt.prompt_text,
+    isDefault: prompt.is_default,
+    isActive: prompt.is_active,
+    createdAt: prompt.created_at,
+    updatedAt: prompt.updated_at,
+  };
+}
+
 // GET /api/prompts
 export async function GET(request: NextRequest) {
   try {
+    // Get authenticated user
+    const supabase = createRouteHandlerClient({ cookies });
+
+    // Check if we're using a mock client (missing env vars)
+    const supabaseUrl =
+      process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    if (!supabaseUrl || supabaseUrl === 'https://placeholder.supabase.co') {
+      console.warn(
+        'Supabase not configured - returning default prompts for local development'
+      );
+      const promptService = PromptService.getInstance();
+      const defaultPrompts = await promptService.getUserPrompts();
+      return NextResponse.json(defaultPrompts);
+    }
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user's custom prompts
+    const { data: userPrompts, error: userError } = await supabase
+      .from('prompts')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (userError) {
+      console.error('Error fetching user prompts:', userError);
+      // Don't throw, just log and continue with defaults
+    }
+
+    // Get default prompts from PromptService
     const promptService = PromptService.getInstance();
-    const prompts = await promptService.getUserPrompts();
-    return NextResponse.json(prompts);
+    const defaultPrompts = await promptService.getUserPrompts(); // This returns defaults when no userId
+
+    // Normalize user prompts from snake_case to camelCase
+    const normalizedUserPrompts = (userPrompts || []).map(
+      normalizePromptFields
+    );
+
+    // Combine user prompts with defaults
+    const allPrompts = [...normalizedUserPrompts, ...defaultPrompts];
+
+    return NextResponse.json(allPrompts);
   } catch (error) {
     console.error('Error fetching prompts:', error);
     return NextResponse.json(
@@ -39,12 +101,39 @@ export async function POST(request: NextRequest) {
 
     // Get authenticated user from server-side Supabase client
     const supabase = createRouteHandlerClient({ cookies });
+
+    // Check if we're using a mock client (missing env vars)
+    const supabaseUrl =
+      process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    if (!supabaseUrl || supabaseUrl === 'https://placeholder.supabase.co') {
+      console.warn(
+        'Supabase not configured - returning mock response for local development'
+      );
+      return NextResponse.json(
+        {
+          id: 'mock-prompt-' + Date.now(),
+          userId: 'mock-user-id',
+          name,
+          templateType,
+          promptText,
+          isDefault: false,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        { status: 201 }
+      );
+    }
+
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
 
+    console.log('Auth check:', { user: user?.id, authError });
+
     if (authError || !user) {
+      console.error('Authentication failed:', authError);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -72,7 +161,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(prompt, { status: 201 });
+    // Normalize the created prompt before returning
+    const normalizedPrompt = normalizePromptFields(prompt);
+    return NextResponse.json(normalizedPrompt, { status: 201 });
   } catch (error) {
     console.error('Error creating prompt:', error);
     const errorMessage =
