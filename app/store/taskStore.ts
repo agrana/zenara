@@ -36,6 +36,7 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const supabase = createClient();
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
@@ -55,6 +56,7 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
   addTask: async (title) => {
     set({ isLoading: true, error: null });
     try {
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
@@ -168,6 +170,7 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
   clearCompletedTasks: async () => {
     set({ isLoading: true, error: null });
     try {
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 

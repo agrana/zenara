@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '../lib/supabaseClient';
+import { createClient } from '../lib/supabase';
 import { audioManager, type SoundType, type AlertSound } from '../lib/audioManager';
 
 interface PomodoroSession {
@@ -69,6 +69,7 @@ export const usePomodoroStore = create<PomodoroState>()((set, get) => ({
   fetchSessions: async () => {
     set({ isLoading: true, error: null });
     try {
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
@@ -150,7 +151,8 @@ export const usePomodoroStore = create<PomodoroState>()((set, get) => ({
       // After work, go to break mode and increment completed sessions
       // Also save the completed session to the database
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('No user found');
 
         const { error } = await supabase

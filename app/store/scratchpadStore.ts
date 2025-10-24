@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '../lib/supabaseClient';
+import { createClient } from '../lib/supabase';
 
 export type FormatType =
   | 'default'
@@ -486,6 +486,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
     isProcessed = false,
     processingMetadata?: any
   ) => {
+    const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -530,6 +531,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
   },
 
   fetchVersions: async (noteId: string) => {
+    const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -591,6 +593,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
   },
 
   deleteVersion: async (versionId: string) => {
+    const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
