@@ -100,7 +100,7 @@ export default function ProfilePage() {
         }
         await createPrompt({
           ...formData,
-          userId: user.id,
+          userId: user?.id,
         } as CreatePromptData);
       }
       handleCloseDialog();
