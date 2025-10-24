@@ -74,21 +74,36 @@ export async function POST(request: NextRequest) {
     let authError = null;
     let supabase = null;
 
-    try {
-      supabase = createRouteHandlerClient({ cookies });
-      const authResult = await supabase.auth.getUser();
-      user = authResult.data?.user;
-      authError = authResult.error;
-    } catch (error) {
+    // Check if Supabase is properly configured first
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'https://placeholder.supabase.co') {
       console.warn(
-        'Supabase not configured, using mock user for development:',
-        error
+        'Supabase not configured, using mock user for development'
       );
       // In development mode without proper Supabase setup, use a mock user
       user = {
         id: 'mock-user-id',
         email: 'dev@example.com',
       };
+    } else {
+      try {
+        supabase = createRouteHandlerClient({ cookies });
+        const authResult = await supabase.auth.getUser();
+        user = authResult.data?.user;
+        authError = authResult.error;
+      } catch (error) {
+        console.warn(
+          'Supabase auth failed, using mock user for development:',
+          error
+        );
+        // In development mode without proper Supabase setup, use a mock user
+        user = {
+          id: 'mock-user-id',
+          email: 'dev@example.com',
+        };
+      }
     }
 
     console.log('Auth check:', { user: user?.id, authError });
@@ -101,7 +116,7 @@ export async function POST(request: NextRequest) {
     // Create prompt directly with server-side client (bypasses RLS issues)
     try {
       // If Supabase is not available, return mock response
-      if (!supabase) {
+      if (!supabase || !supabaseUrl || !supabaseAnonKey || supabaseUrl === 'https://placeholder.supabase.co') {
         console.warn(
           'Database not available, returning mock prompt for development'
         );
