@@ -50,7 +50,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user) {
-      fetchPrompts(user.id);
+      fetchPrompts();
       fetchTemplateTypes();
     }
   }, [user, fetchPrompts, fetchTemplateTypes]);
@@ -100,12 +100,11 @@ export default function ProfilePage() {
         }
         await createPrompt({
           ...formData,
-          userId: user?.id,
         } as CreatePromptData);
       }
       handleCloseDialog();
       if (user) {
-        fetchPrompts(user.id);
+        fetchPrompts();
       }
     } catch (err) {
       console.error('Error saving prompt:', err);
@@ -118,7 +117,7 @@ export default function ProfilePage() {
     try {
       await deletePrompt(id);
       if (user) {
-        fetchPrompts(user.id);
+        fetchPrompts();
       }
     } catch (err) {
       console.error('Error deleting prompt:', err);
