@@ -36,7 +36,9 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
       const { data, error } = await supabase
@@ -48,15 +50,20 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
       if (error) throw error;
       set({ tasks: data || [], isLoading: false });
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'Failed to fetch tasks', isLoading: false });
+      set({
+        error: error instanceof Error ? error.message : 'Failed to fetch tasks',
+        isLoading: false,
+      });
     }
   },
 
-  addTask: async (title) => {
+  addTask: async title => {
     set({ isLoading: true, error: null });
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
       const newTask = {
@@ -64,7 +71,7 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
         completed: false,
         created_at: new Date().toISOString(),
         completed_at: null,
-        user_id: user.id
+        user_id: user.id,
       };
 
       const { data, error } = await supabase
@@ -77,12 +84,15 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
 
       set(state => ({
         tasks: [data, ...state.tasks],
-        isLoading: false
+        isLoading: false,
       }));
 
       return data;
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'Failed to add task', isLoading: false });
+      set({
+        error: error instanceof Error ? error.message : 'Failed to add task',
+        isLoading: false,
+      });
       throw error;
     }
   },
@@ -90,6 +100,7 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
   editTask: async (id, title) => {
     set({ isLoading: true, error: null });
     try {
+      const supabase = createClient();
       const { error } = await supabase
         .from('tasks')
         .update({ title })
@@ -101,44 +112,49 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
         tasks: state.tasks.map(task =>
           task.id === id ? { ...task, title } : task
         ),
-        isLoading: false
+        isLoading: false,
       }));
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'Failed to edit task', isLoading: false });
+      set({
+        error: error instanceof Error ? error.message : 'Failed to edit task',
+        isLoading: false,
+      });
     }
   },
 
-  deleteTask: async (id) => {
+  deleteTask: async id => {
     set({ isLoading: true, error: null });
     try {
-      const { error } = await supabase
-        .from('tasks')
-        .delete()
-        .eq('id', id);
+      const supabase = createClient();
+      const { error } = await supabase.from('tasks').delete().eq('id', id);
 
       if (error) throw error;
 
       set(state => ({
         tasks: state.tasks.filter(task => task.id !== id),
-        isLoading: false
+        isLoading: false,
       }));
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'Failed to delete task', isLoading: false });
+      set({
+        error: error instanceof Error ? error.message : 'Failed to delete task',
+        isLoading: false,
+      });
     }
   },
 
-  toggleTask: async (id) => {
+  toggleTask: async id => {
     set({ isLoading: true, error: null });
     try {
       const task = get().tasks.find(t => t.id === id);
       if (!task) throw new Error('Task not found');
 
       const completed = !task.completed;
+      const supabase = createClient();
       const { error } = await supabase
         .from('tasks')
         .update({
           completed,
-          completed_at: completed ? new Date().toISOString() : null
+          completed_at: completed ? new Date().toISOString() : null,
         })
         .eq('id', id);
 
@@ -150,19 +166,22 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
             return {
               ...task,
               completed,
-              completed_at: completed ? new Date().toISOString() : null
+              completed_at: completed ? new Date().toISOString() : null,
             };
           }
           return task;
         }),
-        isLoading: false
+        isLoading: false,
       }));
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'Failed to toggle task', isLoading: false });
+      set({
+        error: error instanceof Error ? error.message : 'Failed to toggle task',
+        isLoading: false,
+      });
     }
   },
 
-  getTask: (id) => {
+  getTask: id => {
     return get().tasks.find(task => task.id === id);
   },
 
@@ -170,7 +189,9 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
       const { error } = await supabase
@@ -183,10 +204,16 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
 
       set(state => ({
         tasks: state.tasks.filter(task => !task.completed),
-        isLoading: false
+        isLoading: false,
       }));
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'Failed to clear completed tasks', isLoading: false });
+      set({
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to clear completed tasks',
+        isLoading: false,
+      });
     }
   },
 
@@ -196,5 +223,5 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
 
   getRemainingCount: () => {
     return get().tasks.filter(task => !task.completed).length;
-  }
+  },
 }));
