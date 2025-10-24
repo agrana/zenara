@@ -27,15 +27,18 @@ export async function GET(request: NextRequest) {
       const supabase = createRouteHandlerClient({ cookies });
       const {
         data: { user },
+        error: authError,
       } = await supabase.auth.getUser();
+
+      console.log('GET Auth result:', {
+        hasUser: !!user,
+        userId: user?.id,
+        authError: authError?.message,
+      });
+
       userId = user?.id;
     } catch (authError) {
-      console.warn(
-        'Auth not available, fetching default prompts only:',
-        authError
-      );
-      // Use mock user ID for development
-      userId = 'mock-user-id';
+      console.warn('GET Auth failed:', authError);
     }
 
     const promptService = PromptService.getInstance();
@@ -74,36 +77,21 @@ export async function POST(request: NextRequest) {
     let authError = null;
     let supabase = null;
 
-    // Check if Supabase is properly configured first
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+    // Always try to get authenticated user first
+    try {
+      supabase = createRouteHandlerClient({ cookies });
+      const authResult = await supabase.auth.getUser();
+      user = authResult.data?.user;
+      authError = authResult.error;
 
-    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'https://placeholder.supabase.co') {
-      console.warn(
-        'Supabase not configured, using mock user for development'
-      );
-      // In development mode without proper Supabase setup, use a mock user
-      user = {
-        id: 'mock-user-id',
-        email: 'dev@example.com',
-      };
-    } else {
-      try {
-        supabase = createRouteHandlerClient({ cookies });
-        const authResult = await supabase.auth.getUser();
-        user = authResult.data?.user;
-        authError = authResult.error;
-      } catch (error) {
-        console.warn(
-          'Supabase auth failed, using mock user for development:',
-          error
-        );
-        // In development mode without proper Supabase setup, use a mock user
-        user = {
-          id: 'mock-user-id',
-          email: 'dev@example.com',
-        };
-      }
+      console.log('Auth result:', {
+        hasUser: !!user,
+        userId: user?.id,
+        authError: authError?.message,
+      });
+    } catch (error) {
+      console.warn('Supabase auth failed:', error);
+      authError = error;
     }
 
     console.log('Auth check:', { user: user?.id, authError });
@@ -115,23 +103,8 @@ export async function POST(request: NextRequest) {
 
     // Create prompt directly with server-side client (bypasses RLS issues)
     try {
-      // If Supabase is not available, return mock response
-      if (!supabase || !supabaseUrl || !supabaseAnonKey || supabaseUrl === 'https://placeholder.supabase.co') {
-        console.warn(
-          'Database not available, returning mock prompt for development'
-        );
-        const mockPrompt = {
-          id: `mock-${Date.now()}`,
-          user_id: user.id,
-          name,
-          template_type: templateType,
-          prompt_text: promptText,
-          is_default: isDefault || false,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        return NextResponse.json(mockPrompt, { status: 201 });
+      if (!supabase) {
+        throw new Error('Supabase client not available');
       }
 
       const { data: prompt, error } = await supabase
