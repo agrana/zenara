@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '../lib/supabaseClient';
+import { createClient } from '../lib/supabase';
 
 export interface Task {
   id: number;
@@ -35,6 +35,7 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
   fetchTasks: async () => {
     set({ isLoading: true, error: null });
     try {
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
