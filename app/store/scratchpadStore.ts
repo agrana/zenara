@@ -132,6 +132,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
   fetchNotes: async () => {
     set({ isLoading: true, error: null });
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from('notes')
         .select('*')
@@ -148,6 +149,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
   createNote: async (title: string, content: string) => {
     set({ isLoading: true, error: null });
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from('notes')
         .insert([{ title, content }])
@@ -169,6 +171,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
   updateNote: async (id: string, title: string, content: string) => {
     set({ isLoading: true, error: null });
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from('notes')
         .update({ title, content })
@@ -235,6 +238,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
   deleteNote: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
+      const supabase = createClient();
       const { error } = await supabase.from('notes').delete().eq('id', id);
       if (error) throw error;
       set({
@@ -280,6 +284,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
 
       if (currentNote) {
         // Update existing note
+        const supabase = createClient();
         const { data, error } = await supabase
           .from('notes')
           .update({ title, content })
@@ -300,7 +305,8 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
       } else {
         // Create new note - only if we have meaningful content
         if (content.trim().length > 0) {
-          const { data, error } = await supabase
+          const supabase = createClient();
+        const { data, error } = await supabase
             .from('notes')
             .insert([{ title: title || 'Untitled Note', content }])
             .select()
@@ -336,6 +342,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
 
       if (currentNote) {
         // Update existing note
+        const supabase = createClient();
         const { data, error } = await supabase
           .from('notes')
           .update({ title, content })
@@ -354,6 +361,7 @@ export const useScratchpadStore = create<ScratchpadState>()((set, get) => ({
         });
       } else if (content.trim().length > 0) {
         // Create new note immediately
+        const supabase = createClient();
         const { data, error } = await supabase
           .from('notes')
           .insert([{ title: title || 'Untitled Note', content }])
