@@ -22,7 +22,8 @@ if (process.env.NODE_ENV === 'test') {
     process.env.SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Missing Supabase environment variables - using mock client');
+    console.warn('Missing Supabase environment variables - using mock client for local development');
+    console.warn('To use real Supabase, set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY');
     supabaseClient = createClient(
       'https://placeholder.supabase.co',
       'placeholder-anon-key'

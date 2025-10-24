@@ -3,6 +3,21 @@ import { PromptService } from '../../lib/promptService';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
+// Utility function to normalize Supabase fields to camelCase
+function normalizePromptFields(prompt: any) {
+  return {
+    id: prompt.id,
+    userId: prompt.user_id,
+    name: prompt.name,
+    templateType: prompt.template_type,
+    promptText: prompt.prompt_text,
+    isDefault: prompt.is_default,
+    isActive: prompt.is_active,
+    createdAt: prompt.created_at,
+    updatedAt: prompt.updated_at,
+  };
+}
+
 // GET /api/prompts
 export async function GET(request: NextRequest) {
   try {
@@ -76,7 +91,10 @@ export async function POST(request: NextRequest) {
       };
     }
 
+    console.log('Auth check:', { user: user?.id, authError });
+
     if (authError || !user) {
+      console.error('Authentication failed:', authError);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
