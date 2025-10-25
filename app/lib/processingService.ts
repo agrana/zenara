@@ -25,7 +25,7 @@ export const PREDEFINED_PROMPTS = {
 Original diary entry:
 {content}
 
-Enhanced version:`
+Enhanced version:`,
   },
   meeting: {
     name: 'Meeting Notes Organization',
@@ -39,7 +39,7 @@ Enhanced version:`
 Original meeting notes:
 {content}
 
-Organized version:`
+Organized version:`,
   },
   braindump: {
     name: 'Brain Dump Organization',
@@ -53,7 +53,7 @@ Organized version:`
 Original brain dump:
 {content}
 
-Organized version:`
+Organized version:`,
   },
   brainstorm: {
     name: 'Brainstorm Enhancement',
@@ -67,7 +67,7 @@ Organized version:`
 Original brainstorm:
 {content}
 
-Enhanced version:`
+Enhanced version:`,
   },
   default: {
     name: 'General Note Enhancement',
@@ -83,8 +83,8 @@ Enhanced version:`
 Original note:
 {content}
 
-Enhanced version:`
-  }
+Enhanced version:`,
+  },
 };
 
 export interface ProcessingOptions {
@@ -116,7 +116,8 @@ export class ProcessingService {
    */
   async processNoteStream(
     content: string,
-    options: ProcessingOptions
+    options: ProcessingOptions,
+    supabaseClient?: any
   ): Promise<ReadableStream<Uint8Array>> {
     try {
       // Get the prompt template
@@ -124,28 +125,43 @@ export class ProcessingService {
       let promptName = 'Custom Prompt';
 
       if (!promptTemplate) {
-        const promptService = PromptService.getInstance();
-
         if (options.promptId) {
           // Get specific prompt by ID
-          const prompt = await promptService.getPromptById(options.promptId);
-          if (prompt) {
-            promptTemplate = prompt.promptText;
-            promptName = prompt.name;
+          if (supabaseClient) {
+            // Use server-side client
+            const { data: prompt, error } = await supabaseClient
+              .from('prompts')
+              .select('*')
+              .eq('id', options.promptId)
+              .single();
+
+            if (!error && prompt) {
+              promptTemplate = prompt.prompt_text;
+              promptName = prompt.name;
+            }
+          } else {
+            // Use client-side service
+            const promptService = PromptService.getInstance();
+            const prompt = await promptService.getPromptById(options.promptId);
+            if (prompt) {
+              promptTemplate = prompt.promptText;
+              promptName = prompt.name;
+            }
           }
         } else if (options.promptType) {
           // Get default prompt by type
-          const prompt = await promptService.getPromptById(`default_${options.promptType}`);
-          if (prompt) {
-            promptTemplate = prompt.promptText;
-            promptName = prompt.name;
+          const templateType = options.promptType;
+          const predefined =
+            PREDEFINED_PROMPTS[templateType as keyof typeof PREDEFINED_PROMPTS];
+          if (predefined) {
+            promptTemplate = predefined.template;
+            promptName = predefined.name;
           }
         }
 
         // Fallback to default
         if (!promptTemplate) {
-          const defaultPrompt = await promptService.getPromptById('default_default');
-          promptTemplate = defaultPrompt?.promptText || PREDEFINED_PROMPTS.default.template;
+          promptTemplate = PREDEFINED_PROMPTS.default.template;
           promptName = 'General Note Enhancement';
         }
       }
@@ -163,38 +179,54 @@ export class ProcessingService {
         async start(controller) {
           try {
             // Send initial metadata
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-              type: 'start',
-              promptUsed: promptName
-            })}\n\n`));
+            controller.enqueue(
+              encoder.encode(
+                `data: ${JSON.stringify({
+                  type: 'start',
+                  promptUsed: promptName,
+                })}\n\n`
+              )
+            );
 
             // Stream the response
             const stream = await chain.stream({
-              content: content
+              content: content,
             });
 
             for await (const chunk of stream) {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-                type: 'chunk',
-                content: chunk
-              })}\n\n`));
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({
+                    type: 'chunk',
+                    content: chunk,
+                  })}\n\n`
+                )
+              );
             }
 
             // Send completion signal
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-              type: 'complete'
-            })}\n\n`));
+            controller.enqueue(
+              encoder.encode(
+                `data: ${JSON.stringify({
+                  type: 'complete',
+                })}\n\n`
+              )
+            );
 
             controller.close();
           } catch (error) {
             console.error('Streaming error:', error);
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-              type: 'error',
-              error: 'Processing failed'
-            })}\n\n`));
+            controller.enqueue(
+              encoder.encode(
+                `data: ${JSON.stringify({
+                  type: 'error',
+                  error: 'Processing failed',
+                })}\n\n`
+              )
+            );
             controller.close();
           }
-        }
+        },
       });
     } catch (error) {
       console.error('Processing service error:', error);
@@ -207,7 +239,8 @@ export class ProcessingService {
    */
   async processNote(
     content: string,
-    options: ProcessingOptions
+    options: ProcessingOptions,
+    supabaseClient?: any
   ): Promise<ProcessingResult> {
     try {
       // Get the prompt template (same logic as streaming)
@@ -215,25 +248,43 @@ export class ProcessingService {
       let promptName = 'Custom Prompt';
 
       if (!promptTemplate) {
-        const promptService = PromptService.getInstance();
-
         if (options.promptId) {
-          const prompt = await promptService.getPromptById(options.promptId);
-          if (prompt) {
-            promptTemplate = prompt.promptText;
-            promptName = prompt.name;
+          // Get specific prompt by ID
+          if (supabaseClient) {
+            // Use server-side client
+            const { data: prompt, error } = await supabaseClient
+              .from('prompts')
+              .select('*')
+              .eq('id', options.promptId)
+              .single();
+
+            if (!error && prompt) {
+              promptTemplate = prompt.prompt_text;
+              promptName = prompt.name;
+            }
+          } else {
+            // Use client-side service
+            const promptService = PromptService.getInstance();
+            const prompt = await promptService.getPromptById(options.promptId);
+            if (prompt) {
+              promptTemplate = prompt.promptText;
+              promptName = prompt.name;
+            }
           }
         } else if (options.promptType) {
-          const prompt = await promptService.getPromptById(`default_${options.promptType}`);
-          if (prompt) {
-            promptTemplate = prompt.promptText;
-            promptName = prompt.name;
+          // Get default prompt by type
+          const templateType = options.promptType;
+          const predefined =
+            PREDEFINED_PROMPTS[templateType as keyof typeof PREDEFINED_PROMPTS];
+          if (predefined) {
+            promptTemplate = predefined.template;
+            promptName = predefined.name;
           }
         }
 
+        // Fallback to default
         if (!promptTemplate) {
-          const defaultPrompt = await promptService.getPromptById('default_default');
-          promptTemplate = defaultPrompt?.promptText || PREDEFINED_PROMPTS.default.template;
+          promptTemplate = PREDEFINED_PROMPTS.default.template;
           promptName = 'General Note Enhancement';
         }
       }
@@ -242,19 +293,19 @@ export class ProcessingService {
       const chain = prompt.pipe(llm).pipe(new StringOutputParser());
 
       const result = await chain.invoke({
-        content: content
+        content: content,
       });
 
       return {
         success: true,
         processedContent: result,
-        promptUsed: promptName
+        promptUsed: promptName,
       };
     } catch (error) {
       console.error('Processing error:', error);
       return {
         success: false,
-        error: 'Failed to process note'
+        error: 'Failed to process note',
       };
     }
   }
