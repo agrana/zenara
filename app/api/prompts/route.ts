@@ -23,8 +23,10 @@ export async function GET(request: NextRequest) {
   try {
     // Try to get user from auth for user-specific prompts
     let userId = null;
+    let supabase = null;
+
     try {
-      const supabase = createRouteHandlerClient({ cookies });
+      supabase = createRouteHandlerClient({ cookies });
       const {
         data: { user },
         error: authError,
@@ -44,7 +46,7 @@ export async function GET(request: NextRequest) {
     // Fetch prompts directly with server-side client
     let userPrompts: any[] = [];
 
-    if (userId) {
+    if (userId && supabase) {
       const { data, error: userError } = await supabase
         .from('prompts')
         .select('*')
