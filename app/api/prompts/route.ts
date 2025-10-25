@@ -41,9 +41,86 @@ export async function GET(request: NextRequest) {
       console.warn('GET Auth failed:', authError);
     }
 
-    const promptService = PromptService.getInstance();
-    const prompts = await promptService.getUserPrompts(userId || undefined);
-    return NextResponse.json(prompts);
+    // Fetch prompts directly with server-side client
+    let userPrompts: any[] = [];
+
+    if (userId) {
+      const { data, error: userError } = await supabase
+        .from('prompts')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (userError) {
+        console.error('Error fetching user prompts:', userError);
+      } else {
+        userPrompts = data || [];
+      }
+    }
+
+    // Get default prompts
+    const defaultPrompts = [
+      {
+        id: 'default_default',
+        name: 'Default Processing',
+        templateType: 'default',
+        promptText:
+          'Please process and improve the following content:\n\n{content}',
+        isDefault: true,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'default_meeting',
+        name: 'Meeting Notes',
+        templateType: 'meeting',
+        promptText:
+          'You are a professional meeting assistant. Please organize and enhance these meeting notes by:\n\n1. Structuring the content with clear headings\n2. Extracting and highlighting action items\n3. Summarizing key decisions\n4. Improving clarity and readability\n5. Adding missing context where helpful\n\nOriginal meeting notes:\n{content}\n\nOrganized version:',
+        isDefault: true,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'default_braindump',
+        name: 'Brain Dump Organization',
+        templateType: 'braindump',
+        promptText:
+          'You are a productivity assistant. Please organize this brain dump by:\n\n1. Categorizing thoughts into logical groups\n2. Creating a clear structure with headings\n3. Identifying actionable items vs. ideas\n4. Improving clarity and readability\n5. Prioritizing items by importance\n\nOriginal brain dump:\n{content}\n\nOrganized version:',
+        isDefault: true,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'default_brainstorm',
+        name: 'Brainstorm Enhancement',
+        templateType: 'brainstorm',
+        promptText:
+          'You are a creative thinking assistant. Please enhance this brainstorming session by:\n\n1. Expanding on promising ideas\n2. Adding related concepts and variations\n3. Suggesting implementation steps\n4. Identifying potential challenges\n5. Creating actionable next steps\n\nOriginal brainstorm:\n{content}\n\nEnhanced version:',
+        isDefault: true,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    // Transform user prompts to match expected format
+    const transformedUserPrompts = userPrompts.map(prompt => ({
+      id: prompt.id,
+      name: prompt.name,
+      templateType: prompt.template_type,
+      promptText: prompt.prompt_text,
+      isDefault: prompt.is_default,
+      isActive: prompt.is_active,
+      createdAt: prompt.created_at,
+      updatedAt: prompt.updated_at,
+    }));
+
+    const allPrompts = [...transformedUserPrompts, ...defaultPrompts];
+    return NextResponse.json(allPrompts);
   } catch (error) {
     console.error('Error fetching prompts:', error);
     return NextResponse.json(
