@@ -36,9 +36,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const result = await processingService.processNote(note, {
-      userId: user.id,
-    });
+    const result = await processingService.processNote(
+      note,
+      {
+        userId: user.id,
+      },
+      supabase
+    );
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error processing note:', error);

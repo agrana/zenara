@@ -32,12 +32,16 @@ export async function POST(request: NextRequest) {
     }
 
     const processingService = ProcessingService.getInstance();
-    const stream = await processingService.processNoteStream(content, {
-      promptId,
-      promptType: promptType || 'default',
-      customPrompt,
-      userId: user.id,
-    });
+    const stream = await processingService.processNoteStream(
+      content,
+      {
+        promptId,
+        promptType: promptType || 'default',
+        customPrompt,
+        userId: user.id,
+      },
+      supabase
+    );
 
     return new Response(stream, {
       headers: {
