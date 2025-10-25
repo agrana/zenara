@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     }
 
     const promptService = PromptService.getInstance();
-    const prompts = await promptService.getUserPrompts(userId);
+    const prompts = await promptService.getUserPrompts(userId || undefined);
     return NextResponse.json(prompts);
   } catch (error) {
     console.error('Error fetching prompts:', error);
