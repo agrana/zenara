@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { NoteVersionService } from '../../../lib/noteVersionService'
+import { NextRequest, NextResponse } from 'next/server';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { NoteVersionService } from '../../../lib/noteVersionService';
 
 // GET /api/note-versions/[noteId]
 export async function GET(
@@ -7,23 +9,33 @@ export async function GET(
   { params }: { params: { noteId: string } }
 ) {
   try {
-    const { noteId } = params
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    const limit = searchParams.get('limit')
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'userId is required' }, { status: 400 })
+    const { noteId } = params;
+    const { searchParams } = new URL(request.url);
+    const limit = searchParams.get('limit');
+
+    // Get authenticated user
+    const supabase = createRouteHandlerClient({ cookies });
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error('Authentication failed:', authError);
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const versionService = NoteVersionService.getInstance()
+
+    const versionService = NoteVersionService.getInstance();
     const versions = limit
-      ? await versionService.getLatestVersions(noteId, userId, parseInt(limit))
-      : await versionService.getVersionsByNoteId(noteId, userId)
-    
-    return NextResponse.json(versions)
+      ? await versionService.getLatestVersions(noteId, user.id, parseInt(limit))
+      : await versionService.getVersionsByNoteId(noteId, user.id);
+
+    return NextResponse.json(versions);
   } catch (error) {
-    console.error('Error fetching note versions:', error)
-    return NextResponse.json({ error: 'Failed to fetch note versions' }, { status: 500 })
+    console.error('Error fetching note versions:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch note versions' },
+      { status: 500 }
+    );
   }
 }
