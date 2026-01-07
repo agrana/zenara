@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const urlSchema = z.string().url();
 
 const extractMeta = (html: string) => {
@@ -24,8 +26,7 @@ const extractMeta = (html: string) => {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const urlParam = searchParams.get('url');
+    const urlParam = request.nextUrl.searchParams.get('url');
 
     if (!urlParam) {
       return NextResponse.json(
