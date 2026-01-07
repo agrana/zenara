@@ -10,6 +10,7 @@ import BackgroundOverlay from '../components/BackgroundOverlay';
 import PomodoroCard from '../components/PomodoroCard';
 import TaskListCard from '../components/TaskListCard';
 import ScratchpadCard from '../components/ScratchpadCard';
+import BookmarksCard from '../components/BookmarksCard';
 import AppButton from '../components/AppButton';
 
 export default function Home() {
@@ -20,6 +21,7 @@ export default function Home() {
   const [pomodoroVisible, setPomodoroVisible] = useState(false);
   const [taskListVisible, setTaskListVisible] = useState(false);
   const [scratchpadVisible, setScratchpadVisible] = useState(false);
+  const [bookmarksVisible, setBookmarksVisible] = useState(false);
 
   // Hydrate store on mount
   useEffect(() => {
@@ -31,11 +33,13 @@ export default function Home() {
   const openPomodoro = () => setPomodoroVisible(true);
   const openTaskList = () => setTaskListVisible(true);
   const openScratchpad = () => setScratchpadVisible(true);
+  const openBookmarks = () => setBookmarksVisible(true);
 
   // Direct handlers to close apps
   const closePomodoro = () => setPomodoroVisible(false);
   const closeTaskList = () => setTaskListVisible(false);
   const closeScratchpad = () => setScratchpadVisible(false);
+  const closeBookmarks = () => setBookmarksVisible(false);
 
   // Show loading state while checking authentication
   if (loading || !hydrated) {
@@ -71,10 +75,10 @@ export default function Home() {
           )}
 
           <div className='flex flex-col md:flex-row items-start gap-6 mt-16'>
-            {/* Left side - Pomodoro and Tasks */}
+            {/* Left side - Pomodoro, Tasks, and Bookmarks */}
             <div className='w-full md:w-1/3 flex flex-col space-y-6'>
               {/* App buttons when cards are not visible - stacked vertically */}
-              {!pomodoroVisible && !taskListVisible && (
+              {!pomodoroVisible && !taskListVisible && !bookmarksVisible && (
                 <div className='flex flex-col space-y-4 mb-4'>
                   <AppButton
                     emoji='🍅'
@@ -86,6 +90,12 @@ export default function Home() {
                     emoji='✓'
                     label='Task List'
                     onClick={openTaskList}
+                    isActive={false}
+                  />
+                  <AppButton
+                    emoji='🔖'
+                    label='Bookmarks'
+                    onClick={openBookmarks}
                     isActive={false}
                   />
                 </div>
@@ -114,6 +124,19 @@ export default function Home() {
                     Close
                   </button>
                   <TaskListCard />
+                </div>
+              )}
+
+              {/* Bookmarks card */}
+              {bookmarksVisible && (
+                <div className='relative'>
+                  <button
+                    onClick={closeBookmarks}
+                    className='absolute top-3 right-3 z-10 text-sm text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                  >
+                    Close
+                  </button>
+                  <BookmarksCard />
                 </div>
               )}
             </div>
